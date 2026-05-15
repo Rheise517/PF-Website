@@ -1,0 +1,47 @@
+PlayForge Athletics is a youth speed and agility training program for kids ages 6–13. It is hosted at J5 Athletics in League City
+
+The website should clearly explain:
+- what the business is
+- what we offer
+- who it is for
+- who I am
+- class details
+- pricing
+- location
+- how to get started
+
+About the business:
+PlayForge Athletics helps young athletes improve speed, agility, coordination, movement, and confidence through structured group and private training.
+
+What we offer:
+Group and private speed and agility training for ages 6–13.
+
+Current details:
+- Monday and Tuesday
+- 5:00–6:00 PM
+- Hosted at J5 Athletics
+- $40 drop-in
+- $150/month for 1 class per week
+- $250/month for 2 class per week
+- $79/hour for private lessons (get with Coach Rheise to schedule, package deals available)
+
+Tone:
+- simple
+- clear
+- confident
+- encouraging
+- parent-friendly
+
+Style:
+The site should feel clean, modern, athletic, and trustworthy.
+Not too intense, too technical, or too childish.
+
+Include these sections:
+- Hero
+- About
+- What We Offer
+- Who It’s For
+- Coaches / about me
+- Class Details
+- Pricing
+- Call to Action
