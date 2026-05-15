@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0D0D0D">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
   <title>PlayForge Athletics — Youth Speed & Agility Training</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -304,6 +308,126 @@
 
     /* ── Stat divider ── */
     .stat-div { width:1px; background:rgba(255,255,255,.12); align-self:stretch; }
+
+    /* ══════════════════════════════════════════════
+       MOBILE & TOUCH OPTIMIZATIONS
+    ══════════════════════════════════════════════ */
+
+    /* Prevent iOS font inflation, kill tap flash */
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+    body { -webkit-tap-highlight-color: transparent; }
+
+    /* Smooth momentum scroll on iOS */
+    * { -webkit-overflow-scrolling: touch; }
+
+    /* Prevent double-tap zoom delay on all interactive elements */
+    a, button, .btn-gold, .btn-outline, .btn-dark, .btn-red {
+      touch-action: manipulation;
+    }
+
+    /* Ensure minimum 44×44 touch targets (Apple HIG / Android guidelines) */
+    .btn-gold, .btn-outline, .btn-dark, .btn-red {
+      min-height: 44px;
+    }
+    .ham {
+      min-width: 44px;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fix backdrop-filter for older iOS Safari */
+    .nav { -webkit-backdrop-filter: blur(12px); }
+
+    /* Safe-area insets for iPhone notch / Dynamic Island / home indicator */
+    .nav {
+      padding-top: env(safe-area-inset-top);
+      height: calc(70px + env(safe-area-inset-top));
+    }
+    footer {
+      padding-bottom: calc(36px + env(safe-area-inset-bottom));
+    }
+
+    /* Scroll offset so fixed nav doesn't hide section headings */
+    #about, #offer, #who, #coach, #schedule, #pricing, #contact {
+      scroll-margin-top: 70px;
+    }
+
+    /* Prevent absolute decorators from causing horizontal overflow on mobile */
+    section, .coach-grid > div, .about-grid > div, .who-grid > div {
+      overflow-x: clip;
+    }
+
+    /* ── Tablet (≤1024px): tighten pricing/offer grids ── */
+    @media (max-width: 1024px) {
+      .price-grid { grid-template-columns: repeat(2, 1fr) !important; }
+      .offer-grid  { grid-template-columns: repeat(2, 1fr) !important; }
+      .feat-p-card { transform: scale(1) !important; }
+    }
+
+    /* ── Mobile (≤768px) ── */
+    @media (max-width: 768px) {
+      /* Nav safe area on mobile */
+      .nav-links.open {
+        top: calc(70px + env(safe-area-inset-top));
+      }
+
+      /* Section vertical rhythm */
+      #about, #offer, #who, #coach, #schedule, #pricing, #contact {
+        padding-left: 20px !important;
+        padding-right: 20px !important;
+        padding-top: 72px !important;
+        padding-bottom: 72px !important;
+      }
+      #contact { padding-top: 90px !important; padding-bottom: 90px !important; }
+
+      /* Grids already override to 1fr via !important above; fix coach fixed width */
+      .coach-grid { grid-template-columns: 1fr !important; }
+
+      /* Fit images naturally on mobile — drop fixed heights */
+      #about img[style*="height:440px"],
+      #who   img[style*="height:500px"] { height: auto !important; max-height: 320px; object-fit: cover; }
+
+      /* Coach photo */
+      #coach img[style*="height:430px"] { height: 280px !important; }
+
+      /* Hero: tighten top padding */
+      #hero > div { padding-top: 40px !important; padding-bottom: 60px !important; }
+
+      /* CTA box on mobile: full-width */
+      #contact [style*="max-width:560px"] { max-width: 100% !important; }
+
+      /* Footer: center everything */
+      footer > div {
+        flex-direction: column !important;
+        align-items: center !important;
+        text-align: center !important;
+      }
+
+      /* Pricing: single column on phones */
+      .price-grid { grid-template-columns: 1fr !important; }
+      .feat-p-card { transform: scale(1) !important; }
+
+      /* Offer: single column on phones */
+      .offer-grid { grid-template-columns: 1fr !important; }
+
+      /* Schedule: single column */
+      .sched-grid { grid-template-columns: 1fr !important; }
+
+      /* Button rows: stack on very small screens */
+      .btn-row-wrap { flex-direction: column !important; align-items: stretch !important; }
+      .btn-row-wrap > * { text-align: center !important; }
+    }
+
+    /* ── Small phones (≤390px) ── */
+    @media (max-width: 390px) {
+      .display { letter-spacing: -.01em; }
+      h1.display { font-size: clamp(2.8rem, 11vw, 3.4rem) !important; }
+      h2.display { font-size: clamp(2rem, 9vw, 2.6rem) !important; }
+      .p-card { padding: 28px 20px !important; }
+      .offer-card { padding: 24px 20px !important; }
+    }
   </style>
 </head>
 <body>
@@ -383,7 +507,7 @@
         <p class="au d2" style="font-size:1.08rem;line-height:1.75;color:rgba(255,255,255,.62);max-width:470px;margin-bottom:36px;">
           PlayForge Athletics gives kids ages 6–13 the speed, agility, and movement skills they need to level up in any sport — in a fun, structured, and encouraging environment.
         </p>
-        <div class="au d3" style="display:flex;gap:14px;flex-wrap:wrap;">
+        <div class="au d3 btn-row-wrap" style="display:flex;gap:14px;flex-wrap:wrap;">
           <a href="#contact" class="btn-gold">Get Started Today</a>
           <a href="#about"   class="btn-outline">Learn More</a>
         </div>
@@ -844,7 +968,7 @@
       <p style="font-size:.88rem;color:rgba(255,255,255,.55);line-height:1.65;margin-bottom:14px;">Complete your registration &amp; waiver form first (no payment required). Then select a plan and pay below.</p>
       <a href="https://form.jotform.com/Playforgeathletics/playforge-speed-and-agility-registr" target="_blank" class="btn-gold" style="display:inline-block;">Register &amp; Sign Waiver</a>
     </div>
-    <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
+    <div class="btn-row-wrap" style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap;">
       <a href="mailto:PlayForgeAthletics@gmail.com" class="btn-outline">Email Coach Rheise</a>
       <a href="tel:2813170629" class="btn-outline">Call: (281) 317-0629</a>
     </div>
