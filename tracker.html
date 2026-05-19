@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Athlete Tracker — PlayForge Athletics</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --gold:    #F5C518;
+      --red:     #E63329;
+      --blk:     #0D0D0D;
+      --wht:     #FFFFFF;
+      --surface: #141414;
+      --raised:  #1C1C1C;
+      --border:  rgba(255,255,255,.07);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--blk);
+      color: var(--wht);
+      overflow-x: hidden;
+      min-height: 100vh;
+    }
+
+    .display { font-family: 'Barlow Condensed', sans-serif; }
+
+    /* Speed-line diagonal texture — matches main site */
+    .speed-tex {
+      background-image: repeating-linear-gradient(
+        -58deg,
+        transparent, transparent 48px,
+        rgba(245,197,24,.025) 48px, rgba(245,197,24,.025) 49px
+      );
+    }
+
+    /* Ambient glow blobs */
+    .glow {
+      position: fixed;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Nav ── */
+    .nav-bar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(13,13,13,.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--border);
+      padding: 14px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .back-link {
+      display: flex; align-items: center; gap: 6px;
+      color: rgba(255,255,255,.45);
+      text-decoration: none;
+      font-size: .85rem;
+      letter-spacing: .02em;
+      transition: color .15s ease;
+    }
+    .back-link:hover { color: var(--gold); }
+    .back-link:focus-visible { outline: 2px solid var(--gold); border-radius: 3px; }
+
+    /* ── Inputs ── */
+    .field {
+      background: var(--raised);
+      border: 1.5px solid rgba(255,255,255,.1);
+      color: var(--wht);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 1rem;
+      padding: 13px 16px;
+      border-radius: 7px;
+      outline: none;
+      width: 100%;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .field:focus {
+      border-color: var(--gold);
+      box-shadow: 0 0 0 3px rgba(245,197,24,.1);
+    }
+    .field::placeholder { color: rgba(255,255,255,.28); }
+
+    /* ── Buttons ── */
+    .btn-primary {
+      background: var(--gold);
+      color: var(--blk);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.1rem;
+      font-weight: 800;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 13px 32px;
+      border-radius: 7px;
+      border: none;
+      cursor: pointer;
+      width: 100%;
+      transition: background .15s ease, transform .1s ease;
+    }
+    .btn-primary:hover  { background: #ffd84d; }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    .btn-ghost {
+      background: transparent;
+      border: 1.5px solid rgba(255,255,255,.15);
+      color: rgba(255,255,255,.45);
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem;
+      padding: 6px 14px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: border-color .15s ease, color .15s ease;
+    }
+    .btn-ghost:hover { border-color: rgba(255,255,255,.35); color: rgba(255,255,255,.75); }
+    .btn-ghost:focus-visible { outline: 2px solid var(--gold); }
+
+    /* ── Stat cards (latest session) ── */
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid rgba(245,197,24,.12);
+      border-radius: 10px;
+      padding: 22px 20px 18px;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold), rgba(245,197,24,.3));
+    }
+    .stat-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2.8rem;
+      font-weight: 900;
+      line-height: 1;
+      color: var(--gold);
+      letter-spacing: -.02em;
+    }
+
+    /* ── Session history rows ── */
+    .session-row {
+      background: var(--raised);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 18px 22px;
+      cursor: pointer;
+      position: relative;
+      transition: border-color .18s ease, background .18s ease, transform .12s ease;
+    }
+    .session-row:hover {
+      border-color: rgba(245,197,24,.25);
+      background: #202020;
+      transform: translateY(-1px);
+    }
+    .session-row:focus-visible { outline: 2px solid var(--gold); }
+    .session-row.selected {
+      border-color: var(--gold);
+      background: rgba(245,197,24,.06);
+    }
+    .session-row.selected .check-icon { opacity: 1; }
+    .check-icon {
+      position: absolute;
+      top: 14px; right: 16px;
+      color: var(--gold);
+      font-size: .85rem;
+      opacity: 0;
+      transition: opacity .15s ease;
+    }
+
+    /* ── Comparison panel ── */
+    .cmp-panel {
+      background: var(--surface);
+      border: 1px solid rgba(245,197,24,.12);
+      border-radius: 10px;
+      padding: 24px;
+    }
+
+    /* ── Metric comparison rows ── */
+    .metric-row {
+      display: grid;
+      grid-template-columns: 1fr 160px 1fr;
+      gap: 8px;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid rgba(255,255,255,.045);
+    }
+    .metric-row:last-child { border-bottom: none; }
+    .metric-left  { text-align: right; }
+    .metric-right { text-align: left; }
+    .metric-mid   { text-align: center; }
+
+    /* ── Badges ── */
+    .badge {
+      display: inline-block;
+      border-radius: 4px;
+      padding: 3px 8px;
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .03em;
+      margin-top: 5px;
+    }
+    .badge-up   { background: rgba(74,222,128,.12); color: #4ade80; }
+    .badge-down { background: rgba(230,51,41,.12);  color: #f87171; }
+    .badge-flat { background: rgba(255,255,255,.07); color: rgba(255,255,255,.4); }
+
+    /* ── Error alert ── */
+    .alert-error {
+      background: rgba(230,51,41,.08);
+      border: 1px solid rgba(230,51,41,.25);
+      border-radius: 7px;
+      color: #fca5a5;
+      font-size: .9rem;
+      padding: 13px 16px;
+      margin-top: 14px;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      width: 30px; height: 30px;
+      border: 3px solid rgba(245,197,24,.18);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: spin .65s linear infinite;
+      margin: 0 auto 14px;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Fade-up reveal ── */
+    .fade-up {
+      animation: fadeUp .38s cubic-bezier(.22,.88,.4,1) forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Section label ── */
+    .section-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: .68rem;
+      font-weight: 700;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .stat-grid    { grid-template-columns: 1fr 1fr !important; }
+      .cmp-grid     { grid-template-columns: 1fr !important; }
+      .metric-row   { grid-template-columns: 1fr; }
+      .metric-left, .metric-right { text-align: left; }
+      .session-stats { grid-template-columns: 1fr 1fr !important; }
+    }
+  </style>
+</head>
+<body class="speed-tex">
+
+  <!-- Ambient glows -->
+  <div class="glow" style="width:700px;height:700px;top:-260px;right:-180px;background:radial-gradient(circle,rgba(245,197,24,.08) 0%,transparent 65%);"></div>
+  <div class="glow" style="width:500px;height:500px;bottom:5%;left:-180px;background:radial-gradient(circle,rgba(230,51,41,.07) 0%,transparent 65%);"></div>
+
+  <!-- ── NAV ── -->
+  <nav class="nav-bar" style="position: relative; z-index: 50;">
+    <a href="/" style="display:flex;align-items:center;gap:10px;text-decoration:none;">
+      <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" style="height:36px;width:auto;">
+    </a>
+    <a href="/" class="back-link">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+      Back to site
+    </a>
+  </nav>
+
+  <!-- ── HERO / SEARCH ── -->
+  <section style="position:relative;z-index:1;padding:70px 24px 56px;max-width:640px;margin:0 auto;text-align:center;">
+    <div class="section-label" style="color:var(--gold);margin-bottom:14px;">Performance Tracker</div>
+    <h1 class="display" style="font-size:clamp(2.6rem,8vw,4.2rem);font-weight:900;line-height:.93;letter-spacing:-.02em;margin-bottom:14px;">
+      TRACK YOUR<br><span style="color:var(--gold);">ATHLETE'S</span> PROGRESS
+    </h1>
+    <p style="color:rgba(255,255,255,.45);font-size:.98rem;line-height:1.72;margin-bottom:40px;max-width:420px;margin-left:auto;margin-right:auto;">
+      Enter your child's name to see their latest performance stats and monitor their improvement over time.
+    </p>
+
+    <!-- Search form -->
+    <div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+        <input id="inp-first" type="text" class="field" placeholder="First name" autocomplete="off" aria-label="First name">
+        <input id="inp-last"  type="text" class="field" placeholder="Last name"  autocomplete="off" aria-label="Last name">
+      </div>
+      <button class="btn-primary" onclick="searchAthlete()">Search Athlete</button>
+      <div id="error-msg" style="display:none;" class="alert-error"></div>
+    </div>
+  </section>
+
+  <!-- ── LOADING ── -->
+  <div id="loading" style="display:none;text-align:center;padding:64px 24px;position:relative;z-index:1;">
+    <div class="spinner"></div>
+    <div style="color:rgba(255,255,255,.35);font-size:.88rem;">Loading athlete data…</div>
+  </div>
+
+  <!-- ── NO RESULTS ── -->
+  <div id="no-results" style="display:none;text-align:center;padding:64px 24px;max-width:460px;margin:0 auto;position:relative;z-index:1;">
+    <div style="width:56px;height:56px;border-radius:50%;background:var(--raised);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;margin:0 auto 18px;">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,.35)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    </div>
+    <h3 class="display" style="font-size:1.9rem;font-weight:800;margin-bottom:8px;">No Athlete Found</h3>
+    <p style="color:rgba(255,255,255,.38);line-height:1.65;font-size:.92rem;">
+      We couldn't find a record for that name. Double-check the spelling, or contact Coach Rheise to confirm your athlete has been added.
+    </p>
+  </div>
+
+  <!-- ── RESULTS ── -->
+  <section id="results" style="display:none;position:relative;z-index:1;max-width:920px;margin:0 auto;padding:0 24px 100px;">
+
+    <!-- Athlete header -->
+    <div style="display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:32px;">
+      <div>
+        <div class="section-label" style="color:rgba(255,255,255,.3);margin-bottom:4px;">Athlete</div>
+        <h2 id="athlete-heading" class="display" style="font-size:clamp(1.9rem,5vw,2.9rem);font-weight:900;line-height:1;letter-spacing:-.01em;"></h2>
+      </div>
+      <div id="session-count" style="color:rgba(255,255,255,.35);font-size:.85rem;padding-bottom:4px;"></div>
+    </div>
+
+    <!-- Latest session stats -->
+    <div style="margin-bottom:44px;">
+      <div class="section-label" style="color:var(--gold);margin-bottom:14px;">Latest Session</div>
+      <div id="latest-date" style="color:rgba(255,255,255,.35);font-size:.82rem;margin-bottom:14px;"></div>
+      <div id="latest-cards" class="stat-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;"></div>
+    </div>
+
+    <!-- Session history -->
+    <div>
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
+        <div class="section-label" style="color:rgba(255,255,255,.35);">Session History — Select 2 to Compare</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span id="compare-hint" style="font-size:.8rem;color:rgba(255,255,255,.28);"></span>
+          <button id="btn-clear" class="btn-ghost" style="display:none;" onclick="clearComparison()">Clear</button>
+        </div>
+      </div>
+      <div id="sessions-list" style="display:flex;flex-direction:column;gap:8px;"></div>
+    </div>
+
+    <!-- Comparison view -->
+    <div id="cmp-view" style="display:none;margin-top:40px;">
+      <div class="section-label" style="color:var(--gold);margin-bottom:18px;">Side-by-Side Comparison</div>
+
+      <!-- Date headers -->
+      <div id="cmp-headers" class="cmp-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;"></div>
+
+      <!-- Metric rows -->
+      <div id="cmp-metrics" style="background:var(--surface);border:1px solid rgba(245,197,24,.1);border-radius:10px;padding:24px 28px;"></div>
+    </div>
+
+  </section>
+
+  <script>
+    /* ─────────────────────────────────────────
+       Config
+    ───────────────────────────────────────── */
+    const SHEET_ID = '1g18sinjZjM3V0GVO0G5SCZJn0BN_6KccaZCIQ28Yc3M';
+    const CSV_URL  = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:csv`;
+
+    /* Stat definitions — lowerIsBetter for sprints, higher for broad jump */
+    const STATS = [
+      { col: '10 Yard (sec)',        label: '10-Yard Sprint', unit: 'sec', lowerIsBetter: true  },
+      { col: '20 Yard (sec)',        label: '20-Yard Sprint', unit: 'sec', lowerIsBetter: true  },
+      { col: '5-10-5 Shuttle (sec)', label: '5-10-5 Shuttle', unit: 'sec', lowerIsBetter: true  },
+      { col: 'Broad Jump (in)',      label: 'Broad Jump',    unit: 'in',  lowerIsBetter: false },
+    ];
+
+    /* ─────────────────────────────────────────
+       State
+    ───────────────────────────────────────── */
+    let currentSessions = [];
+    let selected = [];   // indices into currentSessions (max 2)
+
+    /* ─────────────────────────────────────────
+       CSV parsing
+    ───────────────────────────────────────── */
+    function parseCSV(text) {
+      const lines = text.trim().split('\n');
+      const headers = parseCSVLine(lines[0]);
+      return lines.slice(1)
+        .filter(l => l.trim())
+        .map(l => {
+          const vals = parseCSVLine(l);
+          const obj = {};
+          headers.forEach((h, i) => obj[h] = (vals[i] || '').trim());
+          return obj;
+        });
+    }
+
+    function parseCSVLine(line) {
+      const result = [];
+      let cur = '', inQuote = false;
+      for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+          if (inQuote && line[i+1] === '"') { cur += '"'; i++; }
+          else inQuote = !inQuote;
+        } else if (ch === ',' && !inQuote) {
+          result.push(cur); cur = '';
+        } else {
+          cur += ch;
+        }
+      }
+      result.push(cur);
+      return result;
+    }
+
+    /* ─────────────────────────────────────────
+       Date formatting
+    ───────────────────────────────────────── */
+    function fmtDate(str) {
+      try {
+        const d = new Date(str);
+        return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+      } catch { return str; }
+    }
+
+    /* ─────────────────────────────────────────
+       Search
+    ───────────────────────────────────────── */
+    async function searchAthlete() {
+      const first = document.getElementById('inp-first').value.trim().toLowerCase();
+      const last  = document.getElementById('inp-last').value.trim().toLowerCase();
+
+      if (!first || !last) { showError('Please enter both first and last name.'); return; }
+      hideError();
+      hide('results'); hide('no-results');
+      show('loading');
+
+      try {
+        const rows = await fetchData();
+        const matches = rows.filter(r =>
+          r['First Name']?.toLowerCase() === first &&
+          r['Last Name']?.toLowerCase()  === last
+        );
+        hide('loading');
+
+        if (!matches.length) { show('no-results'); return; }
+
+        /* Sort newest → oldest */
+        matches.sort((a, b) => new Date(b['Date']) - new Date(a['Date']));
+        currentSessions = matches;
+        selected = [];
+
+        renderResults();
+        const el = document.getElementById('results');
+        el.style.display = 'block';
+        el.classList.remove('fade-up');
+        void el.offsetWidth;
+        el.classList.add('fade-up');
+
+      } catch (err) {
+        hide('loading');
+        showError('Unable to load data right now. Please try again.');
+        console.error(err);
+      }
+    }
+
+    async function fetchData() {
+      const res = await fetch(CSV_URL);
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return parseCSV(await res.text());
+    }
+
+    /* ─────────────────────────────────────────
+       Render results
+    ───────────────────────────────────────── */
+    function renderResults() {
+      const latest = currentSessions[0];
+
+      /* Athlete heading */
+      document.getElementById('athlete-heading').textContent =
+        `${latest['First Name'].toUpperCase()} ${latest['Last Name'].toUpperCase()}`;
+
+      document.getElementById('session-count').textContent =
+        `${currentSessions.length} session${currentSessions.length !== 1 ? 's' : ''} on record`;
+
+      /* Latest date */
+      document.getElementById('latest-date').textContent = `As of ${fmtDate(latest['Date'])}`;
+
+      /* Latest stat cards */
+      document.getElementById('latest-cards').innerHTML = STATS.map(s => `
+        <div class="stat-card">
+          <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px;">${s.label}</div>
+          <div class="stat-value">${latest[s.col] || '—'}</div>
+          <div style="font-size:.75rem;color:rgba(255,255,255,.28);margin-top:5px;">${s.unit}</div>
+        </div>`).join('');
+
+      /* Session rows */
+      document.getElementById('sessions-list').innerHTML = currentSessions.map((sess, i) => {
+        const stats = STATS.map(s => `
+          <div>
+            <div style="font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-bottom:3px;">${s.label}</div>
+            <div style="font-size:.95rem;font-weight:600;">${sess[s.col] || '—'} <span style="font-size:.7rem;color:rgba(255,255,255,.28);">${s.unit}</span></div>
+          </div>`).join('');
+        return `
+          <div class="session-row" id="sess-${i}" tabindex="0" role="button"
+               aria-pressed="false" onclick="toggleSession(${i})"
+               onkeydown="if(event.key==='Enter'||event.key===' ')toggleSession(${i})">
+            <span class="check-icon">✓</span>
+            <div style="display:flex;align-items:center;flex-wrap:wrap;gap:16px;">
+              <div class="display" style="font-size:1rem;font-weight:700;color:var(--gold);min-width:140px;">${fmtDate(sess['Date'])}</div>
+              <div class="session-stats" style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;flex:1;min-width:0;">${stats}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      hide('cmp-view');
+      updateHint();
+    }
+
+    /* ─────────────────────────────────────────
+       Session selection + comparison
+    ───────────────────────────────────────── */
+    function toggleSession(i) {
+      const pos = selected.indexOf(i);
+      if (pos > -1) {
+        selected.splice(pos, 1);
+        document.getElementById(`sess-${i}`).classList.remove('selected');
+        document.getElementById(`sess-${i}`).setAttribute('aria-pressed', 'false');
+      } else {
+        if (selected.length >= 2) {
+          const evicted = selected.shift();
+          document.getElementById(`sess-${evicted}`)?.classList.remove('selected');
+          document.getElementById(`sess-${evicted}`)?.setAttribute('aria-pressed', 'false');
+        }
+        selected.push(i);
+        document.getElementById(`sess-${i}`).classList.add('selected');
+        document.getElementById(`sess-${i}`).setAttribute('aria-pressed', 'true');
+      }
+      updateHint();
+      if (selected.length === 2) renderComparison();
+      else hide('cmp-view');
+    }
+
+    function clearComparison() {
+      selected.forEach(i => {
+        document.getElementById(`sess-${i}`)?.classList.remove('selected');
+        document.getElementById(`sess-${i}`)?.setAttribute('aria-pressed', 'false');
+      });
+      selected = [];
+      hide('cmp-view');
+      updateHint();
+    }
+
+    function updateHint() {
+      const hint = document.getElementById('compare-hint');
+      const btn  = document.getElementById('btn-clear');
+      if      (selected.length === 0) { hint.textContent = ''; btn.style.display = 'none'; }
+      else if (selected.length === 1) { hint.textContent = 'Select 1 more'; btn.style.display = 'inline-block'; }
+      else                            { hint.textContent = ''; btn.style.display = 'inline-block'; }
+    }
+
+    function renderComparison() {
+      const [ia, ib] = selected;
+      const a = currentSessions[ia], b = currentSessions[ib];
+      /* Put chronologically earlier on the left */
+      const [early, late] = new Date(a['Date']) <= new Date(b['Date']) ? [a, b] : [b, a];
+
+      /* Date headers */
+      document.getElementById('cmp-headers').innerHTML = ['Earlier', 'Latest'].map((label, li) => {
+        const sess = li === 0 ? early : late;
+        return `
+          <div class="cmp-panel">
+            <div class="section-label" style="color:rgba(255,255,255,.28);margin-bottom:5px;">${label}</div>
+            <div class="display" style="font-size:1.45rem;font-weight:800;">${fmtDate(sess['Date'])}</div>
+          </div>`;
+      }).join('');
+
+      /* Metric rows */
+      const rows = STATS.map(s => {
+        const vA = parseFloat(early[s.col]);
+        const vB = parseFloat(late[s.col]);
+        const diff = isNaN(vA) || isNaN(vB) ? null : vB - vA;
+
+        let badgeHTML = '<span class="badge badge-flat">—</span>';
+        if (diff !== null && diff !== 0) {
+          const improved = s.lowerIsBetter ? diff < 0 : diff > 0;
+          const sign  = diff > 0 ? '+' : '';
+          const arrow = improved ? '▲' : '▼';
+          const cls   = improved ? 'badge-up' : 'badge-down';
+          badgeHTML   = `<span class="badge ${cls}">${arrow} ${sign}${Math.abs(diff).toFixed(2)} ${s.unit}</span>`;
+        } else if (diff === 0) {
+          badgeHTML = '<span class="badge badge-flat">No change</span>';
+        }
+
+        /* Highlight the better value gold */
+        const aWins = diff !== null && (s.lowerIsBetter ? vA < vB : vA > vB);
+        const bWins = diff !== null && (s.lowerIsBetter ? vB < vA : vB > vA);
+        const colA  = aWins ? 'var(--gold)' : 'var(--wht)';
+        const colB  = bWins ? 'var(--gold)' : 'var(--wht)';
+
+        return `
+          <div class="metric-row">
+            <div class="metric-left">
+              <div class="display" style="font-size:2rem;font-weight:900;line-height:1;color:${colA};">${early[s.col] || '—'}</div>
+              <div style="font-size:.7rem;color:rgba(255,255,255,.28);margin-top:3px;">${s.unit}</div>
+            </div>
+            <div class="metric-mid">
+              <div style="font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:6px;">${s.label}</div>
+              ${badgeHTML}
+            </div>
+            <div class="metric-right">
+              <div class="display" style="font-size:2rem;font-weight:900;line-height:1;color:${colB};">${late[s.col] || '—'}</div>
+              <div style="font-size:.7rem;color:rgba(255,255,255,.28);margin-top:3px;">${s.unit}</div>
+            </div>
+          </div>`;
+      }).join('');
+
+      document.getElementById('cmp-metrics').innerHTML = `
+        <div style="display:grid;grid-template-columns:1fr 160px 1fr;gap:8px;padding-bottom:12px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.05);">
+          <div style="text-align:right;" class="section-label" style="color:rgba(255,255,255,.22);">Earlier</div>
+          <div></div>
+          <div class="section-label" style="color:rgba(255,255,255,.22);">Latest</div>
+        </div>
+        ${rows}`;
+
+      const el = document.getElementById('cmp-view');
+      el.style.display = 'block';
+      el.classList.remove('fade-up');
+      void el.offsetWidth;
+      el.classList.add('fade-up');
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    /* ─────────────────────────────────────────
+       UI helpers
+    ───────────────────────────────────────── */
+    function show(id) { document.getElementById(id).style.display = 'block'; }
+    function hide(id) { document.getElementById(id).style.display = 'none';  }
+
+    function showError(msg) {
+      const el = document.getElementById('error-msg');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+    function hideError() { document.getElementById('error-msg').style.display = 'none'; }
+
+    /* Enter key triggers search */
+    document.addEventListener('DOMContentLoaded', () => {
+      ['inp-first', 'inp-last'].forEach(id =>
+        document.getElementById(id).addEventListener('keydown', e => {
+          if (e.key === 'Enter') searchAthlete();
+        })
+      );
+    });
+  </script>
+</body>
+</html>

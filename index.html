@@ -314,7 +314,7 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="#hero" style="text-decoration:none;">
-      <img src="brand_assets/LOGO_PF.png" alt="PlayForge Athletics" class="logo-fix" style="height:42px;width:auto;">
+      <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" class="logo-fix" style="height:42px;width:auto;">
     </a>
 
     <!-- Desktop links -->
@@ -324,6 +324,7 @@
       <a href="#schedule" class="nav-link">Schedule</a>
       <a href="#pricing"  class="nav-link">Pricing</a>
       <a href="#coach"    class="nav-link">Coach</a>
+      <a href="tracker.html" class="nav-link" style="color:var(--gold);font-weight:600;">Tracker</a>
       <a href="#contact"  class="btn-gold" style="padding:10px 22px;font-size:.9rem;">Get Started</a>
     </div>
 
@@ -344,6 +345,7 @@
     <a href="#schedule" class="nav-link" onclick="closeNav()">Schedule</a>
     <a href="#pricing"  class="nav-link" onclick="closeNav()">Pricing</a>
     <a href="#coach"    class="nav-link" onclick="closeNav()">Coach</a>
+    <a href="tracker.html" class="nav-link" style="color:var(--gold);font-weight:600;" onclick="closeNav()">Tracker</a>
     <a href="#contact"  class="btn-gold" onclick="closeNav()">Get Started</a>
   </div>
 </nav>
@@ -393,7 +395,7 @@
       <!-- Right: logo glow -->
       <div class="au d2" style="display:flex;justify-content:center;align-items:center;position:relative;">
         <div style="position:absolute;width:420px;height:420px;background:radial-gradient(circle,rgba(245,197,24,.13) 0%,transparent 68%);border-radius:50%;"></div>
-        <img src="brand_assets/LOGO_PF.png" alt="PlayForge Athletics" class="logo-fix"
+        <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" class="logo-fix"
              style="width:100%;max-width:500px;position:relative;z-index:1;
                     filter:drop-shadow(0 0 50px rgba(245,197,24,.3)) drop-shadow(0 0 120px rgba(245,197,24,.12));">
       </div>
@@ -861,7 +863,7 @@
 <footer style="background:#0A0A0A;border-top:1px solid rgba(245,197,24,.1);padding:36px 28px;">
   <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;">
     <a href="#hero" style="text-decoration:none;">
-      <img src="brand_assets/LOGO_PF.png" alt="PlayForge Athletics" class="logo-fix" style="height:34px;width:auto;opacity:.8;">
+      <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" class="logo-fix" style="height:34px;width:auto;opacity:.8;">
     </a>
     <div style="font-size:.82rem;color:rgba(255,255,255,.3);text-align:center;">
       © 2025 PlayForge Athletics · League City, TX ·
@@ -895,44 +897,6 @@
   // Scroll-reveal removed — content always visible for reliability
 </script>
 
-<script>
-// Fill inner transparent areas (PLAY, ATHLETICS letters) with white using edge-connected flood fill.
-// Outer transparent areas (logo background) are edge-reachable and left alone; inner cutouts are not.
-function fixLogoTransparency(img) {
-  const canvas = document.createElement('canvas');
-  canvas.width = img.naturalWidth;
-  canvas.height = img.naturalHeight;
-  const ctx = canvas.getContext('2d');
-  ctx.drawImage(img, 0, 0);
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-  const d = imageData.data;
-  const w = canvas.width, h = canvas.height;
-  const isTransparent = i => d[i * 4 + 3] < 128;
-  const outer = new Uint8Array(w * h);
-  const queue = [];
-  const seed = i => { if (!outer[i] && isTransparent(i)) { outer[i] = 1; queue.push(i); } };
-  for (let x = 0; x < w; x++) { seed(x); seed((h - 1) * w + x); }
-  for (let y = 0; y < h; y++) { seed(y * w); seed(y * w + w - 1); }
-  for (let qi = 0; qi < queue.length; qi++) {
-    const i = queue[qi], x = i % w, y = (i / w) | 0;
-    if (x > 0) seed(i - 1);
-    if (x < w - 1) seed(i + 1);
-    if (y > 0) seed(i - w);
-    if (y < h - 1) seed(i + w);
-  }
-  for (let i = 0; i < w * h; i++) {
-    if (isTransparent(i) && !outer[i]) {
-      d[i * 4] = 255; d[i * 4 + 1] = 255; d[i * 4 + 2] = 255; d[i * 4 + 3] = 255;
-    }
-  }
-  ctx.putImageData(imageData, 0, 0);
-  img.src = canvas.toDataURL('image/png');
-}
-document.querySelectorAll('img.logo-fix').forEach(img => {
-  if (img.complete && img.naturalWidth) fixLogoTransparency(img);
-  else img.addEventListener('load', () => fixLogoTransparency(img));
-});
-</script>
 
 </body>
 </html>
