@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Athlete Tracker — PlayForge Athletics</title>
+  <title>Athlete Tracker | PlayForge Athletics</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -301,6 +301,10 @@
       </div>
       <button class="btn-primary" onclick="searchAthlete()">Search Athlete</button>
       <div id="error-msg" style="display:none;" class="alert-error"></div>
+      <p style="color:rgba(255,255,255,.28);font-size:.82rem;margin-top:16px;line-height:1.65;">
+        Want to see how it works?
+        <button onclick="loadDemo()" style="background:none;border:none;color:var(--gold);cursor:pointer;font-size:.82rem;text-decoration:underline;padding:0;font-family:'DM Sans',sans-serif;">View a sample athlete profile</button>
+      </p>
     </div>
   </section>
 
@@ -343,7 +347,7 @@
     <!-- Session history -->
     <div>
       <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:14px;">
-        <div class="section-label" style="color:rgba(255,255,255,.35);">Session History — Select 2 to Compare</div>
+        <div class="section-label" style="color:rgba(255,255,255,.35);">Session History: Select 2 to Compare</div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span id="compare-hint" style="font-size:.8rem;color:rgba(255,255,255,.28);"></span>
           <button id="btn-clear" class="btn-ghost" style="display:none;" onclick="clearComparison()">Clear</button>
@@ -650,6 +654,12 @@
       el.style.display = 'block';
     }
     function hideError() { document.getElementById('error-msg').style.display = 'none'; }
+
+    function loadDemo() {
+      document.getElementById('inp-first').value = 'Test';
+      document.getElementById('inp-last').value = 'Test';
+      searchAthlete();
+    }
 
     /* Enter key triggers search */
     document.addEventListener('DOMContentLoaded', () => {
