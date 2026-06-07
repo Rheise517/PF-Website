@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Event Registration | PlayForge Athletics x Be Someone Sports</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --gold:    #F5C518;
+      --red:     #E63329;
+      --blk:     #0D0D0D;
+      --wht:     #FFFFFF;
+      --surface: #141414;
+      --raised:  #1C1C1C;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'DM Sans', sans-serif; background: var(--blk); color: var(--wht); overflow-x: hidden; min-height: 100vh; }
+    .display { font-family: 'Barlow Condensed', sans-serif; }
+
+    .speed-tex {
+      background-image: repeating-linear-gradient(-58deg, transparent, transparent 48px, rgba(245,197,24,.025) 48px, rgba(245,197,24,.025) 49px);
+    }
+
+    /* Nav */
+    .nav-bar {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(13,13,13,.95);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(245,197,24,.12);
+      padding: 13px 22px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .back-link {
+      display: flex; align-items: center; gap: 7px;
+      color: rgba(255,255,255,.4); text-decoration: none; font-size: .83rem; letter-spacing: .02em;
+      transition: color .15s ease;
+    }
+    .back-link:hover { color: var(--gold); }
+    .back-link:focus-visible { outline: 2px solid var(--gold); border-radius: 3px; outline-offset: 2px; }
+
+    /* Form card */
+    .form-card {
+      background: var(--surface);
+      border: 1px solid rgba(255,255,255,.07);
+      border-radius: 14px;
+      padding: 38px 34px;
+    }
+    @media (max-width: 600px) { .form-card { padding: 24px 16px; border-radius: 10px; } }
+
+    /* Section headings */
+    .sec-head {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1.02rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+      color: var(--gold);
+      display: flex; align-items: center; gap: 10px;
+      padding-bottom: 13px;
+      border-bottom: 1px solid rgba(255,255,255,.06);
+      margin-bottom: 22px;
+    }
+    .sec-num {
+      width: 22px; height: 22px; flex-shrink: 0;
+      background: var(--gold); color: var(--blk);
+      font-size: .7rem; font-weight: 900;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* Fields */
+    .fg { margin-bottom: 17px; }
+    .lbl {
+      display: block; font-size: .78rem; font-weight: 500;
+      color: rgba(255,255,255,.46); letter-spacing: .05em; text-transform: uppercase; margin-bottom: 7px;
+    }
+    .lbl.req::after { content: ' *'; color: var(--gold); }
+    .inp {
+      width: 100%;
+      background: var(--raised); border: 1.5px solid rgba(255,255,255,.1); border-radius: 7px;
+      color: var(--wht); font-family: 'DM Sans', sans-serif; font-size: .97rem;
+      padding: 12px 14px; outline: none; -webkit-appearance: none;
+      transition: border-color .18s ease, box-shadow .18s ease;
+    }
+    .inp:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(245,197,24,.1); }
+    .inp.err { border-color: var(--red); box-shadow: 0 0 0 3px rgba(230,51,41,.1); }
+    .inp::placeholder { color: rgba(255,255,255,.18); }
+    input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(.45); cursor: pointer; }
+
+    .ferr { font-size: .77rem; color: #f87171; margin-top: 5px; display: none; }
+    .ferr.show { display: block; }
+
+    /* Two-col */
+    .col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    @media (max-width: 520px) { .col2 { grid-template-columns: 1fr; } }
+
+    /* Child block */
+    .child-block {
+      background: rgba(255,255,255,.025);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 10px; padding: 20px 16px; margin-bottom: 12px;
+    }
+    .child-block.err-section { border-color: rgba(230,51,41,.5); }
+    .child-hdr { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .child-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: .88rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.4); }
+    .btn-remove {
+      background: transparent; border: 1px solid rgba(230,51,41,.3); color: rgba(230,51,41,.6);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: .7rem; letter-spacing: .07em; text-transform: uppercase;
+      padding: 5px 11px; border-radius: 5px; cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+    }
+    .btn-remove:hover { border-color: var(--red); color: #fff; background: var(--red); }
+    .btn-remove:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+
+    /* Sports pills */
+    .sports-grid { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 9px; }
+    .sport-pill { position: relative; }
+    .sport-pill input[type="checkbox"] {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    .sport-pill label {
+      display: block; padding: 6px 13px;
+      background: var(--raised); border: 1.5px solid rgba(255,255,255,.1); border-radius: 20px;
+      font-size: .79rem; color: rgba(255,255,255,.46); cursor: pointer;
+      transition: border-color .15s, color .15s, background .15s;
+      user-select: none;
+    }
+    .sport-pill input:checked + label { border-color: var(--gold); color: var(--gold); background: rgba(245,197,24,.08); }
+    .sport-pill label:hover { border-color: rgba(255,255,255,.28); color: rgba(255,255,255,.72); }
+    .sport-pill input:focus-visible + label { outline: 2px solid var(--gold); outline-offset: 2px; border-radius: 20px; }
+
+    /* Add child button */
+    .btn-add {
+      display: flex; align-items: center; justify-content: center; gap: 8px; width: 100%;
+      border: 1.5px dashed rgba(245,197,24,.32); color: rgba(245,197,24,.65); background: transparent;
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: .86rem; letter-spacing: .1em; text-transform: uppercase;
+      padding: 12px 20px; border-radius: 7px; cursor: pointer;
+      transition: border-color .2s, color .2s, background .2s;
+    }
+    .btn-add:hover { border-color: var(--gold); color: var(--gold); background: rgba(245,197,24,.05); }
+    .btn-add:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+
+    /* Waiver text box */
+    .waiver-box {
+      background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.09); border-radius: 8px;
+      padding: 17px 19px; max-height: 196px; overflow-y: auto;
+      font-size: .82rem; line-height: 1.72; color: rgba(255,255,255,.44); margin-bottom: 14px;
+      scrollbar-width: thin; scrollbar-color: rgba(245,197,24,.22) transparent;
+    }
+    .waiver-box::-webkit-scrollbar { width: 4px; }
+    .waiver-box::-webkit-scrollbar-thumb { background: rgba(245,197,24,.22); border-radius: 3px; }
+    .waiver-box strong { display: block; font-family: 'Barlow Condensed', sans-serif; font-size: .94rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.62); margin-bottom: 10px; }
+    .waiver-box p + p { margin-top: 9px; }
+
+    /* Consent checkbox row */
+    .check-row { display: flex; gap: 11px; align-items: flex-start; margin-bottom: 6px; }
+    .check-row input[type="checkbox"] { width: 20px; height: 20px; min-width: 20px; accent-color: var(--gold); cursor: pointer; margin-top: 1px; }
+    .check-row label { font-size: .87rem; line-height: 1.52; color: rgba(255,255,255,.62); cursor: pointer; }
+
+    /* Media release radio options */
+    .media-radio {
+      position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
+    }
+    .media-opt {
+      display: flex; align-items: flex-start; gap: 14px;
+      padding: 15px 17px; margin-bottom: 9px;
+      background: var(--raised); border: 1.5px solid rgba(255,255,255,.1); border-radius: 9px;
+      cursor: pointer;
+      transition: border-color .18s, background .18s;
+    }
+    .media-opt:hover { border-color: rgba(255,255,255,.25); }
+    .media-opt.selected-grant { border-color: var(--gold); background: rgba(245,197,24,.07); }
+    .media-opt.selected-deny  { border-color: var(--red);  background: rgba(230,51,41,.07); }
+    .media-opt.err-section    { border-color: rgba(230,51,41,.55); }
+    .media-icon {
+      width: 30px; height: 30px; min-width: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin-top: 1px; font-size: 1rem; font-weight: 700;
+    }
+    .media-icon.grant { background: rgba(245,197,24,.12); color: var(--gold); }
+    .media-icon.deny  { background: rgba(230,51,41,.12);  color: var(--red); }
+    .media-opt-title { font-family: 'Barlow Condensed', sans-serif; font-size: .95rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 4px; }
+    .grant-title { color: rgba(245,197,24,.75); }
+    .deny-title  { color: rgba(230,51,41,.75); }
+    .selected-grant .grant-title { color: var(--gold); }
+    .selected-deny  .deny-title  { color: var(--red); }
+    .media-opt-body { font-size: .83rem; line-height: 1.55; color: rgba(255,255,255,.44); }
+
+    /* Separator */
+    .sep { height: 1px; background: rgba(255,255,255,.06); margin: 28px 0; }
+
+    /* Buttons */
+    .btn-gold {
+      display: inline-flex; align-items: center; justify-content: center; gap: 9px;
+      background: var(--gold); color: var(--blk);
+      font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 1.08rem; letter-spacing: .07em; text-transform: uppercase;
+      padding: 14px 32px; border-radius: 7px; border: none; cursor: pointer;
+      box-shadow: 0 4px 22px rgba(245,197,24,.24);
+      transition: transform .22s cubic-bezier(.34,1.56,.64,1), box-shadow .22s ease, opacity .2s ease;
+    }
+    .btn-gold:hover  { transform: translateY(-2px) scale(1.02); box-shadow: 0 10px 32px rgba(245,197,24,.4); }
+    .btn-gold:active { transform: translateY(0) scale(.99); opacity: .9; }
+    .btn-gold:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .btn-gold:disabled { opacity: .48; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* Banners */
+    .banner-error {
+      background: rgba(230,51,41,.09); border: 1px solid rgba(230,51,41,.3); border-radius: 7px;
+      padding: 13px 16px; font-size: .86rem; color: #fca5a5; margin-bottom: 20px; display: none;
+    }
+    .banner-error.show { display: flex; align-items: flex-start; gap: 10px; }
+
+    /* Thank you */
+    .ty { display: none; }
+    .ty.show { display: block; }
+    .ty-icon {
+      width: 64px; height: 64px; background: rgba(245,197,24,.1); border: 1px solid rgba(245,197,24,.2);
+      border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+    }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner { width: 16px; height: 16px; border: 2.5px solid rgba(13,13,13,.25); border-top-color: var(--blk); border-radius: 50%; animation: spin .65s linear infinite; flex-shrink: 0; }
+
+    /* Honeypot */
+    .hp { position: absolute; left: -9999px; top: -9999px; opacity: 0; pointer-events: none; height: 0; overflow: hidden; }
+
+    /* Ambient */
+    .amb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+
+    /* Optional tag */
+    .opt-tag { font-size: .64rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: rgba(255,255,255,.26); background: rgba(255,255,255,.06); border-radius: 4px; padding: 2px 7px; }
+  </style>
+</head>
+<body>
+
+<div class="amb" style="width:700px;height:700px;top:-250px;right:-250px;background:radial-gradient(circle,rgba(245,197,24,.065) 0%,transparent 68%);"></div>
+<div class="amb" style="width:500px;height:500px;bottom:0;left:-220px;background:radial-gradient(circle,rgba(230,51,41,.05) 0%,transparent 68%);"></div>
+
+
+<!-- NAV -->
+<nav class="nav-bar">
+  <a href="index.html" class="back-link">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+    Main Site
+  </a>
+  <a href="index.html" style="text-decoration:none;">
+    <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" style="height:37px;width:auto;opacity:.88;">
+  </a>
+  <div class="display" style="font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);">Event Reg</div>
+</nav>
+
+
+<!-- HERO -->
+<section class="speed-tex" style="background:var(--blk);padding:50px 20px 42px;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse 90% 70% at 50% 0%,rgba(245,197,24,.07) 0%,transparent 70%);pointer-events:none;"></div>
+  <div style="max-width:600px;margin:0 auto;text-align:center;position:relative;">
+    <div style="display:inline-flex;align-items:center;gap:10px;background:rgba(245,197,24,.07);border:1px solid rgba(245,197,24,.18);border-radius:24px;padding:6px 16px;margin-bottom:17px;">
+      <span class="display" style="font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);">PlayForge Athletics</span>
+      <span style="color:rgba(255,255,255,.22);font-size:.78rem;">x</span>
+      <span class="display" style="font-size:.7rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.44);">Be Someone Sports</span>
+    </div>
+    <h1 class="display" style="font-size:clamp(2.2rem,7vw,3.8rem);font-weight:900;line-height:.95;letter-spacing:-.02em;text-transform:uppercase;margin-bottom:13px;">
+      Partnership Event<br><span style="color:var(--gold);">Registration</span>
+    </h1>
+    <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.44);max-width:430px;margin:0 auto;">
+      Fill this out on your phone. Takes about two minutes. One parent or guardian signs for the whole family.
+    </p>
+  </div>
+</section>
+
+
+<!-- FORM -->
+<main style="background:var(--blk);padding:0 14px 80px;position:relative;z-index:1;">
+  <div style="max-width:640px;margin:0 auto;">
+
+    <div class="form-card" id="form-wrapper">
+
+      <!-- Error banner -->
+      <div class="banner-error" id="banner-error">
+        <svg style="flex-shrink:0;margin-top:1px;" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/></svg>
+        <span id="banner-msg">Please complete all required fields before submitting.</span>
+      </div>
+
+      <form id="reg-form" novalidate>
+
+        <!-- Honeypot -->
+        <div class="hp" aria-hidden="true">
+          <label for="hp_url">Leave blank</label>
+          <input type="text" id="hp_url" name="hp_url" tabindex="-1" autocomplete="off">
+        </div>
+
+
+        <!-- ══ 1 — PARENT / GUARDIAN ══ -->
+        <div style="margin-bottom:28px;">
+          <div class="sec-head"><span class="sec-num">1</span> Parent / Guardian</div>
+
+          <div class="fg">
+            <label class="lbl req" for="parent_name">Full Name</label>
+            <input class="inp" type="text" id="parent_name" placeholder="Jane Smith" autocomplete="name" required>
+            <div class="ferr" id="e_parent_name">Please enter your full name.</div>
+          </div>
+
+          <div class="col2">
+            <div class="fg">
+              <label class="lbl req" for="parent_phone">Phone Number</label>
+              <input class="inp" type="tel" id="parent_phone" placeholder="(555) 000-0000" autocomplete="tel" required>
+              <div class="ferr" id="e_parent_phone">Enter a valid phone number.</div>
+            </div>
+            <div class="fg">
+              <label class="lbl req" for="parent_email">Email Address</label>
+              <input class="inp" type="email" id="parent_email" placeholder="jane@email.com" autocomplete="email" required>
+              <div class="ferr" id="e_parent_email">Enter a valid email address.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+
+        <!-- ══ 2 — CHILDREN ══ -->
+        <div style="margin-bottom:28px;">
+          <div class="sec-head"><span class="sec-num">2</span> Children Being Registered</div>
+          <div id="children-container"></div>
+          <button type="button" class="btn-add" id="add-child-btn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Another Child
+          </button>
+        </div>
+
+        <div class="sep"></div>
+
+
+        <!-- ══ 3 — EMERGENCY CONTACT ══ -->
+        <div style="margin-bottom:28px;">
+          <div class="sec-head"><span class="sec-num">3</span> Emergency Contact <span class="opt-tag">Optional</span></div>
+          <p style="font-size:.79rem;color:rgba(255,255,255,.3);line-height:1.6;margin-bottom:17px;">Useful if the registering parent is not on-site at drop-off.</p>
+          <div class="col2">
+            <div class="fg">
+              <label class="lbl" for="ec_name">Contact Name</label>
+              <input class="inp" type="text" id="ec_name" placeholder="John Smith" autocomplete="off">
+            </div>
+            <div class="fg">
+              <label class="lbl" for="ec_phone">Contact Phone</label>
+              <input class="inp" type="tel" id="ec_phone" placeholder="(555) 000-0000" autocomplete="off">
+            </div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+
+        <!-- ══ 4 — LIABILITY WAIVER ══ -->
+        <div style="margin-bottom:28px;">
+          <div class="sec-head"><span class="sec-num">4</span> Liability Waiver</div>
+
+          <div class="waiver-box">
+            <strong>Assumption of Risk &amp; Release of Liability</strong>
+            <p>I understand that participation in PlayForge Athletics LLC training and events, including any activities held at this event co-hosted with Be Someone Sports at J5 Athletics, involves physical activity and carries an inherent risk of injury. On behalf of myself and the minor child(ren) I am registering, I voluntarily assume all such risks.</p>
+            <p>In consideration of being permitted to participate, I, for myself and on behalf of my child(ren), release, waive, and discharge PlayForge Athletics LLC, Be Someone Sports, J5 Athletics, and their owners, coaches, staff, and volunteers from any and all claims, liabilities, or demands arising out of or related to participation in this event, including those arising from ordinary negligence, to the fullest extent permitted by law.</p>
+            <p>I confirm that my child(ren) is/are physically able to participate, and I authorize event staff to seek emergency medical treatment if needed. I am the parent or legal guardian with authority to sign on the child(ren)'s behalf.</p>
+          </div>
+
+          <div class="check-row">
+            <input type="checkbox" id="waiver_agreed">
+            <label for="waiver_agreed">I have read and agree to the Assumption of Risk and Release of Liability above. I understand this is a binding legal agreement.</label>
+          </div>
+          <div class="ferr" id="e_waiver" style="padding-left:31px;">You must agree to the liability waiver to register.</div>
+        </div>
+
+        <div class="sep"></div>
+
+
+        <!-- ══ 5 — MEDIA RELEASE ══ -->
+        <div style="margin-bottom:34px;">
+          <div class="sec-head"><span class="sec-num">5</span> Photo &amp; Video Release</div>
+
+          <div class="waiver-box">
+            <strong>Photo &amp; Video Release</strong>
+            <p>PlayForge Athletics LLC and Be Someone Sports may photograph and record participants during this event and use those images and recordings for promotional and marketing purposes, including on websites, social media, and printed materials.</p>
+          </div>
+
+          <!-- GRANT option -->
+          <input class="media-radio" type="radio" id="media_grant" name="media_choice" value="grant">
+          <label for="media_grant" class="media-opt" id="opt-grant">
+            <div class="media-icon grant">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M20 6L9 17l-5-5"/></svg>
+            </div>
+            <div>
+              <div class="media-opt-title grant-title">I Grant Permission</div>
+              <div class="media-opt-body">I give PlayForge Athletics LLC and Be Someone Sports permission to photograph and record my child(ren) at this event for promotional use.</div>
+            </div>
+          </label>
+
+          <!-- DENY option -->
+          <input class="media-radio" type="radio" id="media_deny" name="media_choice" value="deny">
+          <label for="media_deny" class="media-opt" id="opt-deny">
+            <div class="media-icon deny">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"><path d="M18 6L6 18M6 6l12 12"/></svg>
+            </div>
+            <div>
+              <div class="media-opt-title deny-title">I Do Not Grant Permission</div>
+              <div class="media-opt-body">I do not give permission for my child(ren) to be photographed or recorded at this event.</div>
+            </div>
+          </label>
+
+          <div class="ferr" id="e_media">Please select your photo and video release preference.</div>
+        </div>
+
+
+        <!-- SUBMIT -->
+        <button type="submit" class="btn-gold" style="width:100%;font-size:1.07rem;padding:14px 32px;" id="submit-btn">
+          <span id="btn-txt">Complete Registration</span>
+          <div class="spinner" id="btn-spin" style="display:none;"></div>
+        </button>
+
+        <p style="font-size:.72rem;color:rgba(255,255,255,.2);text-align:center;margin-top:12px;line-height:1.55;">
+          Your information is stored securely and not shared with third parties.
+        </p>
+
+      </form>
+    </div>
+
+
+    <!-- THANK YOU -->
+    <div class="ty" id="thank-you">
+      <div class="form-card" style="text-align:center;padding:54px 28px;margin-top:0;">
+        <div class="ty-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"/></svg>
+        </div>
+        <h2 class="display" style="font-size:2.6rem;font-weight:900;text-transform:uppercase;line-height:.95;letter-spacing:-.01em;margin-bottom:11px;">
+          You're <span style="color:var(--gold);">Registered!</span>
+        </h2>
+        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.46);max-width:370px;margin:0 auto 24px;">
+          Your spot is locked in. We look forward to seeing your athlete at the event.
+        </p>
+        <div style="background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.13);border-radius:10px;padding:15px 19px;margin-bottom:24px;text-align:left;">
+          <div class="display" style="font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Questions?</div>
+          <p style="font-size:.82rem;color:rgba(255,255,255,.4);line-height:1.65;">
+            Contact Coach Rheise at
+            <a href="mailto:PlayForgeAthletics@gmail.com" style="color:var(--gold);text-decoration:none;">PlayForgeAthletics@gmail.com</a>
+            or <a href="tel:2813170629" style="color:var(--gold);text-decoration:none;">(281) 317-0629</a>.
+          </p>
+        </div>
+        <a href="index.html"
+           style="color:rgba(255,255,255,.28);font-size:.82rem;text-decoration:none;letter-spacing:.03em;transition:color .2s;"
+           onmouseover="this.style.color='#F5C518'" onmouseout="this.style.color='rgba(255,255,255,.28)'">
+          Back to PlayForge Athletics
+        </a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+
+<!-- FOOTER -->
+<footer style="background:#0A0A0A;border-top:1px solid rgba(245,197,24,.08);padding:24px 20px;">
+  <div style="max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
+    <a href="index.html" style="text-decoration:none;"><img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" style="height:27px;width:auto;opacity:.62;"></a>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.2);">&copy; 2025 PlayForge Athletics LLC &middot; J5 Athletics, League City TX</div>
+    <div class="display" style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.16);">Event Registration</div>
+  </div>
+</footer>
+
+
+<script>
+  // ════════════════════════════════════════
+  //  SUPABASE CONFIG
+  //  Replace both values before going live.
+  //  Table: event_registrations
+  // ════════════════════════════════════════
+  const SUPABASE_URL  = 'https://whlsrqyekshulkzbsdaw.supabase.co';
+  const SUPABASE_KEY  = 'sb_publishable_mnS_cggTa1CzCkfw2bC9zw_fiHpJIzy';
+  const WAIVER_VER    = 'v1-2025-06-07';
+
+  // Safe init — won't crash if URL is placeholder or CDN didn't load
+  let db = null;
+  try {
+    if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+      const { createClient } = supabase;
+      db = createClient(SUPABASE_URL, SUPABASE_KEY);
+    }
+  } catch (e) {
+    console.warn('[PlayForge] Supabase init skipped:', e.message);
+  }
+
+
+  // ── Sports list ──
+  const SPORTS = [
+    'Football','Basketball','Baseball','Softball',
+    'Soccer','Track & Field','Volleyball','Tennis','Swimming','Wrestling'
+  ];
+
+  let childCount = 0;
+
+  function buildChild(idx) {
+    const pills = SPORTS.map((s, i) => `
+      <div class="sport-pill">
+        <input type="checkbox" id="c${idx}_s${i}" name="c${idx}_sports" value="${s}">
+        <label for="c${idx}_s${i}">${s}</label>
+      </div>`).join('');
+
+    return `
+      <div class="child-block" id="cb${idx}" data-idx="${idx}">
+        <div class="child-hdr">
+          <span class="child-lbl">Child 1</span>
+          ${idx > 0 ? `<button type="button" class="btn-remove" onclick="deleteBlock(${idx})">Remove</button>` : ''}
+        </div>
+        <div class="col2">
+          <div class="fg">
+            <label class="lbl req" for="c${idx}_name">Full Name</label>
+            <input class="inp" type="text" id="c${idx}_name" placeholder="First Last" required>
+            <div class="ferr" id="e_c${idx}_name">Please enter the child's name.</div>
+          </div>
+          <div class="fg">
+            <label class="lbl req" for="c${idx}_dob">Date of Birth</label>
+            <input class="inp" type="date" id="c${idx}_dob" max="${todayISO()}" required>
+            <div class="ferr" id="e_c${idx}_dob">Please enter a date of birth.</div>
+          </div>
+        </div>
+        <div class="fg">
+          <label class="lbl">Current Sport(s) <span class="opt-tag" style="margin-left:5px;">Optional</span></label>
+          <div class="sports-grid">${pills}</div>
+          <input class="inp" type="text" id="c${idx}_other" placeholder="Other sport not listed...">
+        </div>
+      </div>`;
+  }
+
+  function todayISO() { return new Date().toISOString().split('T')[0]; }
+
+  function addChild() {
+    document.getElementById('children-container')
+      .insertAdjacentHTML('beforeend', buildChild(childCount));
+    childCount++;
+    syncLabels();
+  }
+
+  function deleteBlock(idx) {
+    const el = document.getElementById('cb' + idx);
+    if (el) { el.remove(); syncLabels(); }
+  }
+
+  function syncLabels() {
+    document.querySelectorAll('.child-block').forEach((b, i) => {
+      const l = b.querySelector('.child-lbl');
+      if (l) l.textContent = 'Child ' + (i + 1);
+    });
+  }
+
+  // Render first child on load
+  addChild();
+
+  document.getElementById('add-child-btn').addEventListener('click', addChild);
+
+
+  // ── Phone formatter ──
+  function attachPhoneFormat(id) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.addEventListener('input', function () {
+      const d = this.value.replace(/\D/g, '').slice(0, 10);
+      if      (d.length > 6) this.value = `(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+      else if (d.length > 3) this.value = `(${d.slice(0,3)}) ${d.slice(3)}`;
+      else if (d.length > 0) this.value = `(${d}`;
+    });
+  }
+  attachPhoneFormat('parent_phone');
+  attachPhoneFormat('ec_phone');
+
+
+  // ── Validation helpers ──
+  const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const phoneRe = /[\d]{7,}/;
+
+  function fieldErr(inputId, errId, bad) {
+    const inp = document.getElementById(inputId);
+    const err = document.getElementById(errId);
+    if (inp) inp.classList.toggle('err', bad);
+    if (err) bad ? err.classList.add('show') : err.classList.remove('show');
+    return bad;
+  }
+
+  function showFerr(errId, bad) {
+    const err = document.getElementById(errId);
+    if (err) bad ? err.classList.add('show') : err.classList.remove('show');
+    return bad;
+  }
+
+  // Live blur validation for parent fields
+  [['parent_name','e_parent_name'], ['parent_phone','e_parent_phone'], ['parent_email','e_parent_email']].forEach(([id, eid]) => {
+    const el = document.getElementById(id);
+    el.addEventListener('blur', () => {
+      if (id === 'parent_name')  fieldErr(id, eid, !el.value.trim());
+      if (id === 'parent_phone') fieldErr(id, eid, !phoneRe.test(el.value.replace(/\D/g,'')));
+      if (id === 'parent_email') fieldErr(id, eid, !emailRe.test(el.value));
+    });
+    el.addEventListener('input', () => {
+      if (!el.classList.contains('err')) return;
+      if (id === 'parent_name'  && el.value.trim())                          fieldErr(id, eid, false);
+      if (id === 'parent_phone' && phoneRe.test(el.value.replace(/\D/g,''))) fieldErr(id, eid, false);
+      if (id === 'parent_email' && emailRe.test(el.value))                   fieldErr(id, eid, false);
+    });
+  });
+
+
+  // ── Media radio visual state ──
+  document.querySelectorAll('.media-radio').forEach(r => {
+    r.addEventListener('change', function () {
+      document.getElementById('opt-grant').classList.remove('selected-grant', 'err-section');
+      document.getElementById('opt-deny').classList.remove('selected-deny', 'err-section');
+      if (this.value === 'grant') document.getElementById('opt-grant').classList.add('selected-grant');
+      if (this.value === 'deny')  document.getElementById('opt-deny').classList.add('selected-deny');
+      showFerr('e_media', false);
+    });
+  });
+
+  // Allow clicking the label div to select radio
+  ['opt-grant','opt-deny'].forEach(id => {
+    document.getElementById(id).addEventListener('click', function() {
+      const radio = this.previousElementSibling;
+      if (radio && radio.classList.contains('media-radio')) {
+        radio.checked = true;
+        radio.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+
+
+  // ── Form submit ──
+  document.getElementById('reg-form').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    // Honeypot
+    if (document.getElementById('hp_url').value) return;
+
+    let ok = true;
+
+    // Parent
+    const pName  = document.getElementById('parent_name').value.trim();
+    const pPhone = document.getElementById('parent_phone').value.replace(/\D/g,'');
+    const pEmail = document.getElementById('parent_email').value.trim();
+
+    if (fieldErr('parent_name',  'e_parent_name',  !pName))              ok = false;
+    if (fieldErr('parent_phone', 'e_parent_phone', !phoneRe.test(pPhone))) ok = false;
+    if (fieldErr('parent_email', 'e_parent_email', !emailRe.test(pEmail))) ok = false;
+
+    // Children
+    const blocks   = document.querySelectorAll('.child-block');
+    const children = [];
+
+    blocks.forEach(block => {
+      const i    = block.dataset.idx;
+      const name = (document.getElementById('c'+i+'_name')?.value || '').trim();
+      const dob  = document.getElementById('c'+i+'_dob')?.value || '';
+
+      if (fieldErr('c'+i+'_name', 'e_c'+i+'_name', !name)) ok = false;
+      if (fieldErr('c'+i+'_dob',  'e_c'+i+'_dob',  !dob))  ok = false;
+
+      const sports = [
+        ...[...block.querySelectorAll('input[name="c'+i+'_sports"]:checked')].map(cb => cb.value),
+        ...(document.getElementById('c'+i+'_other')?.value.trim() ? [document.getElementById('c'+i+'_other').value.trim()] : [])
+      ];
+      children.push({ name, dob, sports });
+    });
+
+    // Waiver
+    const waiverOk = document.getElementById('waiver_agreed').checked;
+    if (showFerr('e_waiver', !waiverOk)) ok = false;
+    document.getElementById('waiver_agreed').closest('.check-row')?.parentElement?.classList.toggle('has-err', !waiverOk);
+
+    // Media release
+    const mediaVal = document.querySelector('input[name="media_choice"]:checked')?.value;
+    if (!mediaVal) {
+      showFerr('e_media', true);
+      document.getElementById('opt-grant').classList.add('err-section');
+      document.getElementById('opt-deny').classList.add('err-section');
+      ok = false;
+    }
+
+    if (!ok) {
+      showBanner('Please complete all required fields before submitting.');
+      const firstErr = document.querySelector('.inp.err, .ferr.show');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    hideBanner();
+
+    // Loading state
+    const btn   = document.getElementById('submit-btn');
+    const txt   = document.getElementById('btn-txt');
+    const spin  = document.getElementById('btn-spin');
+    btn.disabled   = true;
+    txt.style.display  = 'none';
+    spin.style.display = 'block';
+
+    const payload = {
+      parent_name:             pName,
+      parent_phone:            document.getElementById('parent_phone').value.trim(),
+      parent_email:            pEmail,
+      emergency_contact_name:  document.getElementById('ec_name').value.trim()  || null,
+      emergency_contact_phone: document.getElementById('ec_phone').value.trim() || null,
+      children,
+      liability_waiver_agreed: true,
+      media_release_agreed:    mediaVal === 'grant',
+      waiver_version:          WAIVER_VER,
+      agreed_at:               new Date().toISOString(),
+      user_agent:              navigator.userAgent.slice(0, 200)
+    };
+
+    try {
+      if (!db) {
+        // Demo mode — Supabase not configured yet
+        console.log('[PlayForge] Registration payload (demo mode):', payload);
+        await new Promise(r => setTimeout(r, 900));
+      } else {
+        const { error } = await db.from('event_registrations').insert([payload]);
+        if (error) throw error;
+      }
+
+      showThankYou();
+
+    } catch (err) {
+      console.error('[PlayForge] Submission error:', err);
+      btn.disabled = false;
+      txt.style.display  = 'block';
+      spin.style.display = 'none';
+      showBanner('Something went wrong. Please try again or email PlayForgeAthletics@gmail.com for help.');
+    }
+  });
+
+
+  function showThankYou() {
+    document.getElementById('form-wrapper').style.display = 'none';
+    document.getElementById('thank-you').classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showBanner(msg) {
+    const b = document.getElementById('banner-error');
+    document.getElementById('banner-msg').textContent = msg;
+    b.classList.add('show');
+    b.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function hideBanner() {
+    document.getElementById('banner-error').classList.remove('show');
+  }
+</script>
+
+</body>
+</html>
