@@ -2,4 +2,4 @@ User-agent: *
 Allow: /
 Disallow: /admin/
 
-Sitemap: https://playforgeathletics.com/sitemap.xml
+Sitemap: https://www.playforgeathletics.com/sitemap.xml
