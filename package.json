@@ -1,5 +1,17 @@
 {
+  "name": "pf-website",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "node serve.mjs",
+    "screenshot": "node screenshot.mjs",
+    "screenshot:sections": "node screenshot-sections.mjs"
+  },
   "dependencies": {
     "puppeteer": "^24.43.1"
+  },
+  "devDependencies": {
+    "sharp": "^0.35.3"
   }
 }

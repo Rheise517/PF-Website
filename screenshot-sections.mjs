@@ -1,4 +1,4 @@
-import puppeteer from './node_modules/puppeteer/lib/esm/puppeteer/puppeteer.js';
+import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -19,7 +19,7 @@ function getNextNum() {
 const sections = ['hero', 'about', 'offer', 'who', 'coach', 'schedule', 'pricing', 'contact'];
 
 const browser = await puppeteer.launch({
-  executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+  channel: 'chrome',
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   headless: true,
 });

@@ -1,0 +1,20 @@
+/* PlayForge Athletics — shared design tokens & base styles
+   Loaded by index.html, be-someone.html, and tracker.html.
+   Page-specific styles stay in each page's <style> block. */
+
+:root {
+  --gold:    #F5C518;
+  --red:     #E63329;
+  --blk:     #0D0D0D;
+  --wht:     #FFFFFF;
+  --gray:    #F4F4F4;
+  --surface: #141414;
+  --raised:  #1C1C1C;
+  --border:  rgba(255,255,255,.07);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+.display { font-family: 'Barlow Condensed', sans-serif; }

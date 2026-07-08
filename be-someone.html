@@ -4,25 +4,17 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Event Registration | PlayForge Athletics x Be Someone Sports</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <meta name="description" content="Register your athlete for the PlayForge Athletics x Be Someone Sports partnership event at J5 Athletics in League City, TX.">
+  <meta name="robots" content="noindex">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
 
   <style>
-    :root {
-      --gold:    #F5C518;
-      --red:     #E63329;
-      --blk:     #0D0D0D;
-      --wht:     #FFFFFF;
-      --surface: #141414;
-      --raised:  #1C1C1C;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    html { scroll-behavior: smooth; }
     body { font-family: 'DM Sans', sans-serif; background: var(--blk); color: var(--wht); overflow-x: hidden; min-height: 100vh; }
-    .display { font-family: 'Barlow Condensed', sans-serif; }
 
     .speed-tex {
       background-image: repeating-linear-gradient(-58deg, transparent, transparent 48px, rgba(245,197,24,.025) 48px, rgba(245,197,24,.025) 49px);
@@ -83,7 +75,7 @@
       width: 100%;
       background: var(--raised); border: 1.5px solid rgba(255,255,255,.1); border-radius: 7px;
       color: var(--wht); font-family: 'DM Sans', sans-serif; font-size: .97rem;
-      padding: 12px 14px; outline: none; -webkit-appearance: none;
+      padding: 12px 14px; outline: none; -webkit-appearance: none; appearance: none;
       transition: border-color .18s ease, box-shadow .18s ease;
     }
     .inp:focus { border-color: var(--gold); box-shadow: 0 0 0 3px rgba(245,197,24,.1); }
@@ -93,6 +85,8 @@
 
     .ferr { font-size: .77rem; color: #f87171; margin-top: 5px; display: none; }
     .ferr.show { display: block; }
+    .has-err .check-row input[type="checkbox"] { outline: 2px solid var(--red); outline-offset: 2px; border-radius: 3px; }
+    .has-err .check-row label { color: #fca5a5; }
 
     /* Two-col */
     .col2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
@@ -251,7 +245,7 @@
     Main Site
   </a>
   <a href="index.html" style="text-decoration:none;">
-    <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" style="height:37px;width:auto;opacity:.88;">
+    <img src="brand_assets/optimized/logo-nav.webp" alt="PlayForge Athletics" width="320" height="173" decoding="async" style="height:37px;width:auto;opacity:.88;">
   </a>
   <div class="display" style="font-size:.76rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.28);">Event Reg</div>
 </nav>
@@ -420,7 +414,7 @@
           <div class="spinner" id="btn-spin" style="display:none;"></div>
         </button>
 
-        <p style="font-size:.72rem;color:rgba(255,255,255,.2);text-align:center;margin-top:12px;line-height:1.55;">
+        <p style="font-size:.72rem;color:rgba(255,255,255,.52);text-align:center;margin-top:12px;line-height:1.55;">
           Your information is stored securely and not shared with third parties.
         </p>
 
@@ -438,7 +432,7 @@
           You're <span style="color:var(--gold);">Registered!</span>
         </h2>
         <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.46);max-width:370px;margin:0 auto 24px;">
-          Your spot is locked in. We look forward to seeing your athlete at the event.
+          Your spot is locked in. We can't wait to meet your athlete. Show up ready to move.
         </p>
         <div style="background:rgba(245,197,24,.05);border:1px solid rgba(245,197,24,.13);border-radius:10px;padding:15px 19px;margin-bottom:24px;text-align:left;">
           <div class="display" style="font-size:.74rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:6px;">Questions?</div>
@@ -463,20 +457,15 @@
 <!-- FOOTER -->
 <footer style="background:#0A0A0A;border-top:1px solid rgba(245,197,24,.08);padding:24px 20px;">
   <div style="max-width:640px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;">
-    <a href="index.html" style="text-decoration:none;"><img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" style="height:27px;width:auto;opacity:.62;"></a>
-    <div style="font-size:.75rem;color:rgba(255,255,255,.2);">&copy; 2025 PlayForge Athletics LLC &middot; J5 Athletics, League City TX</div>
-    <div class="display" style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.16);">Event Registration</div>
+    <a href="index.html" style="text-decoration:none;"><img src="brand_assets/optimized/logo-nav.webp" alt="PlayForge Athletics" width="320" height="173" loading="lazy" decoding="async" style="height:27px;width:auto;opacity:.62;"></a>
+    <div style="font-size:.75rem;color:rgba(255,255,255,.52);">&copy; 2026 PlayForge Athletics LLC &middot; J5 Athletics, League City TX</div>
+    <div class="display" style="font-size:.68rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.45);">Event Registration</div>
   </div>
 </footer>
 
 
 <script>
-  // ════════════════════════════════════════
-  //  GOOGLE SHEETS CONFIG
-  //  Paste your Apps Script Web App URL below.
-  //  See setup instructions in the README or
-  //  ask Coach Rheise for the URL.
-  // ════════════════════════════════════════
+  // Google Apps Script Web App endpoint (writes registrations to the sheet)
   const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyRMych_dt6gQaYWie6yu_h9aDH0cKch8Ji5j11QvVukrHcoNWrykMHvd3RcNJdjjxX/exec';
   const WAIVER_VER = 'v1-2025-06-07';
 
@@ -499,7 +488,7 @@
     return `
       <div class="child-block" id="cb${idx}" data-idx="${idx}">
         <div class="child-hdr">
-          <span class="child-lbl">Child 1</span>
+          <span class="child-lbl">Child</span>
           ${idx > 0 ? `<button type="button" class="btn-remove" onclick="deleteBlock(${idx})">Remove</button>` : ''}
         </div>
         <div class="col2">
@@ -704,29 +693,28 @@
       user_agent:              navigator.userAgent.slice(0, 200)
     };
 
-    if (!SCRIPT_URL || SCRIPT_URL === 'YOUR_APPS_SCRIPT_URL') {
-      // Demo mode — script not configured yet
-      console.log('[PlayForge] Registration payload (demo mode):', payload);
-      await new Promise(r => setTimeout(r, 900));
-      showThankYou();
-      return;
-    }
-
     // POST to Google Apps Script Web App.
-    // Uses text/plain + no-cors so no preflight is triggered.
-    // The response is opaque but the sheet write goes through.
-    fetch(SCRIPT_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: { 'Content-Type': 'text/plain' },
-      body: JSON.stringify(payload)
-    }).catch(() => {
-      // no-cors opaque responses always land here — the data still reaches the sheet
-    });
-
-    // Show thank-you immediately; don't make the parent wait for a response we can't read
-    await new Promise(r => setTimeout(r, 600));
-    showThankYou();
+    // text/plain avoids a CORS preflight, so the deployed script's response
+    // (after Google's redirect) is readable and we can confirm the write.
+    try {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 25000);
+      const res = await fetch(SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload),
+        redirect: 'follow',
+        signal: controller.signal
+      });
+      clearTimeout(timer);
+      if (!res.ok) throw new Error('Server responded with status ' + res.status);
+      showThankYou();
+    } catch (err) {
+      btn.disabled = false;
+      txt.style.display = '';
+      spin.style.display = 'none';
+      showBanner('Something went wrong and your registration may not have been saved. Please try again, or contact Coach Rheise at (281) 317-0629 / PlayForgeAthletics@gmail.com.');
+    }
   });
 
 

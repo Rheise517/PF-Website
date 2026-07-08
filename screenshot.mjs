@@ -1,4 +1,4 @@
-import puppeteer from './node_modules/puppeteer/lib/esm/puppeteer/puppeteer.js';
+import puppeteer from 'puppeteer';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -25,7 +25,7 @@ const url = process.argv[2] || 'http://localhost:3000';
 const label = process.argv[3] || '';
 
 const browser = await puppeteer.launch({
-  executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe',
+  channel: 'chrome',
   args: ['--no-sandbox', '--disable-setuid-sandbox'],
   headless: true,
 });

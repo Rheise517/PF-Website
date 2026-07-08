@@ -3,33 +3,79 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PlayForge Athletics | Youth Speed & Agility Training</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Youth Speed &amp; Agility Training in League City, TX | PlayForge Athletics</title>
+  <meta name="description" content="PlayForge Athletics offers youth speed and agility training at J5 Athletics in League City, TX. Group classes (ages 6–13), private lessons, and small group training that build faster, more confident athletes.">
+  <link rel="canonical" href="https://playforgeathletics.com/">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+  <!-- Social sharing -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="PlayForge Athletics">
+  <meta property="og:title" content="Youth Speed &amp; Agility Training in League City, TX | PlayForge Athletics">
+  <meta property="og:description" content="Group classes, private lessons, and small group speed &amp; agility training for young athletes at J5 Athletics in League City, TX.">
+  <meta property="og:url" content="https://playforgeathletics.com/">
+  <meta property="og:image" content="https://playforgeathletics.com/brand_assets/optimized/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Youth Speed &amp; Agility Training in League City, TX | PlayForge Athletics">
+  <meta name="twitter:description" content="Group classes, private lessons, and small group speed &amp; agility training for young athletes at J5 Athletics in League City, TX.">
+  <meta name="twitter:image" content="https://playforgeathletics.com/brand_assets/optimized/og-image.jpg">
+
+  <link rel="preload" as="image" href="brand_assets/optimized/logo-hero.webp">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:ital,wght@0,400;0,500;0,600;0,700;0,800;0,900;1,700;1,800;1,900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700;800;900&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site.css">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SportsActivityLocation",
+    "@id": "https://playforgeathletics.com/#business",
+    "name": "PlayForge Athletics",
+    "url": "https://playforgeathletics.com/",
+    "logo": "https://playforgeathletics.com/brand_assets/optimized/logo-hero.webp",
+    "image": "https://playforgeathletics.com/brand_assets/optimized/og-image.jpg",
+    "description": "Youth speed and agility training for young athletes. Group classes, private lessons, and small group training hosted at J5 Athletics in League City, TX.",
+    "telephone": "+1-281-317-0629",
+    "email": "PlayForgeAthletics@gmail.com",
+    "priceRange": "$40-$325",
+    "address": {
+      "@type": "PostalAddress",
+      "addressLocality": "League City",
+      "addressRegion": "TX",
+      "addressCountry": "US"
+    },
+    "openingHoursSpecification": [{
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Monday", "Tuesday"],
+      "opens": "17:00",
+      "closes": "18:00"
+    }, {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": ["Friday"],
+      "opens": "18:00",
+      "closes": "19:00"
+    }],
+    "makesOffer": [
+      { "@type": "Offer", "name": "Drop-In Class", "price": "40", "priceCurrency": "USD" },
+      { "@type": "Offer", "name": "Monthly Plan, 1 Class per Week", "price": "150", "priceCurrency": "USD" },
+      { "@type": "Offer", "name": "Monthly Plan, 2 Classes per Week", "price": "250", "priceCurrency": "USD" },
+      { "@type": "Offer", "name": "Monthly Plan, 3 Classes per Week", "price": "325", "priceCurrency": "USD" },
+      { "@type": "Offer", "name": "Private Lesson", "price": "99", "priceCurrency": "USD" }
+    ]
+  }
+  </script>
 
   <style>
-    :root {
-      --gold: #F5C518;
-      --red:  #E63329;
-      --blk:  #0D0D0D;
-      --wht:  #FFFFFF;
-      --gray: #F4F4F4;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
     body {
       font-family: 'DM Sans', sans-serif;
       background: #fff;
       color: var(--blk);
       overflow-x: hidden;
     }
-
-    .display { font-family: 'Barlow Condensed', sans-serif; }
 
     /* ── Speed-line diagonal texture ── */
     .speed-tex {
@@ -76,7 +122,7 @@
       display: flex; align-items: center; justify-content: space-between;
     }
     .nav-link {
-      color: rgba(255,255,255,.65);
+      color: rgba(255,255,255,.78);
       font-size: .9rem;
       text-decoration: none;
       letter-spacing: .01em;
@@ -173,6 +219,8 @@
       color: var(--gold);
       margin-bottom: 10px;
     }
+    /* Accessible gold on light sections (brand gold fails contrast on white) */
+    #about .sec-label, #who .sec-label, #coach .sec-label, #pricing .sec-label { color: #8A6400; }
     .gold-bar {
       display: block;
       width: 44px; height: 4px;
@@ -211,21 +259,6 @@
       transition: transform .25s cubic-bezier(.34,1.56,.64,1), box-shadow .25s ease;
     }
     .p-card:hover { transform: translateY(-6px); }
-
-    /* ── Scroll-reveal ── */
-    .reveal {
-      opacity: 1;
-      transform: translateY(0);
-      transition: opacity .65s cubic-bezier(.16,1,.3,1), transform .65s cubic-bezier(.16,1,.3,1);
-    }
-    .reveal.hidden {
-      opacity: 0;
-      transform: translateY(22px);
-    }
-    .reveal.hidden.visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
 
     /* ── Hero entry animations ── */
     @keyframes fadeUp {
@@ -314,7 +347,7 @@
 <nav class="nav">
   <div class="nav-inner">
     <a href="#hero" style="text-decoration:none;">
-      <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" class="logo-fix" style="height:42px;width:auto;">
+      <img src="brand_assets/optimized/logo-nav.webp" alt="PlayForge Athletics" width="320" height="173" decoding="async" style="height:42px;width:auto;">
     </a>
 
     <!-- Desktop links -->
@@ -329,7 +362,7 @@
     </div>
 
     <!-- Hamburger -->
-    <button class="ham" id="ham-btn" aria-label="Open menu">
+    <button class="ham" id="ham-btn" aria-label="Open menu" aria-expanded="false" aria-controls="mobile-nav">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
         <line x1="3" y1="6"  x2="21" y2="6"/>
         <line x1="3" y1="12" x2="21" y2="12"/>
@@ -383,7 +416,7 @@
           Build Champions.
         </h1>
         <p class="au d2" style="font-size:1.08rem;line-height:1.75;color:rgba(255,255,255,.62);max-width:470px;margin-bottom:36px;">
-          PlayForge Athletics gives athletes of all ages the speed, agility, and movement skills they need to level up in any sport, in a fun, structured, and encouraging environment.
+          Real speed and agility training in League City, open to all ages. Your athlete gets faster, moves better, and starts carrying themselves differently. You will see it on the field.
         </p>
         <div class="au d3" style="display:flex;gap:14px;flex-wrap:wrap;">
           <a href="#contact" class="btn-gold">Get Started Today</a>
@@ -395,8 +428,8 @@
       <!-- Right: logo glow -->
       <div class="au d2" style="display:flex;justify-content:center;align-items:center;position:relative;">
         <div style="position:absolute;width:420px;height:420px;background:radial-gradient(circle,rgba(245,197,24,.13) 0%,transparent 68%);border-radius:50%;"></div>
-        <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" class="logo-fix"
-             style="width:100%;max-width:500px;position:relative;z-index:1;
+        <img src="brand_assets/optimized/logo-hero.webp" alt="PlayForge Athletics" width="1000" height="542" fetchpriority="high"
+             style="width:100%;max-width:500px;height:auto;position:relative;z-index:1;
                     filter:drop-shadow(0 0 50px rgba(245,197,24,.3)) drop-shadow(0 0 120px rgba(245,197,24,.12));">
       </div>
 
@@ -418,7 +451,7 @@
       <!-- Image -->
       <div class="reveal" style="position:relative;">
         <div style="border-radius:12px;overflow:hidden;position:relative;line-height:0;">
-          <img src="brand_assets/Agility_Ladder.jpg" alt="Athletes training at PlayForge"
+          <img src="brand_assets/optimized/agility-ladder.webp" alt="Young athletes running agility ladder drills at PlayForge Athletics in League City, TX" width="1400" height="788" loading="lazy" decoding="async"
                style="width:100%;height:440px;object-fit:cover;border-radius:12px;display:block;">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,13,.55) 0%,transparent 55%);border-radius:12px;"></div>
           <div style="position:absolute;bottom:0;left:0;right:0;padding:22px 24px;">
@@ -438,10 +471,10 @@
           Where Young Athletes<br>Find Their Edge
         </h2>
         <p style="font-size:1rem;line-height:1.82;color:#555;margin-bottom:16px;">
-          PlayForge Athletics is a dedicated speed and agility training program built for athletes of all ages and skill levels. Hosted at J5 Athletics in League City, we combine structured coaching with a fun, encouraging atmosphere.
+          PlayForge is a speed and agility program at J5 Athletics in League City. Every session is planned and coached on purpose, but ask any kid here and they'll tell you it feels like the best hour of their week.
         </p>
         <p style="font-size:1rem;line-height:1.82;color:#555;margin-bottom:34px;">
-          Whether your child is just discovering sports or already competing on a team, we meet them where they are and help them develop into faster, more coordinated, and more confident athletes.
+          Maybe your kid is brand new to sports. Maybe they're already competing and need an edge. Either way, we meet them where they are and build from there: faster feet, better body control, and the kind of confidence that shows up everywhere, not just on the field.
         </p>
 
         <div style="display:flex;flex-direction:column;gap:13px;">
@@ -480,7 +513,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
         </div>
         <h3 class="display" style="font-size:1.4rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.03em;margin-bottom:11px;">Speed Training</h3>
-        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Linear acceleration, sprint mechanics, and first-step explosiveness that make a visible difference in every sport your athlete plays.</p>
+        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Sprint mechanics, acceleration, and first-step quickness. It shows up in every sport your kid plays, and other parents notice it too.</p>
       </div>
 
       <!-- Card 2 -->
@@ -489,7 +522,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
         </div>
         <h3 class="display" style="font-size:1.4rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.03em;margin-bottom:11px;">Agility & Quickness</h3>
-        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Ladder work, cone drills, and reactive footwork patterns that build the rapid change-of-direction ability every competitive athlete needs.</p>
+        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Ladder work, cone drills, and reactive footwork. Your athlete learns to change direction faster than the kid trying to guard them.</p>
       </div>
 
       <!-- Card 3 -->
@@ -498,7 +531,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         </div>
         <h3 class="display" style="font-size:1.4rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.03em;margin-bottom:11px;">Group Sessions</h3>
-        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Monday and Tuesday group classes where athletes train together, push each other, and build team-oriented habits that translate to every team they join.</p>
+        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Monday, Tuesday, and Friday classes where kids train next to other kids. Athletes push harder around other athletes. That's just how they're wired, and we use it.</p>
       </div>
 
       <!-- Card 4 -->
@@ -507,7 +540,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
         </div>
         <h3 class="display" style="font-size:1.4rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.03em;margin-bottom:11px;">Private Lessons</h3>
-        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">One-on-one sessions tailored to your child's specific goals. Flexible scheduling and package deals available. Contact Coach Rheise directly.</p>
+        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">One-on-one time built around your kid's specific goals. Flexible scheduling, package deals available. Reach out to Coach Rheise and set it up.</p>
       </div>
 
       <!-- Card 5 -->
@@ -516,7 +549,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
         </div>
         <h3 class="display" style="font-size:1.4rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.03em;margin-bottom:11px;">Movement Fundamentals</h3>
-        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Body control, balance, and foundational movement patterns that build a platform for athletic growth at every age and skill level.</p>
+        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Body control, balance, and the movement basics most kids never get taught. This is the foundation everything else gets built on.</p>
       </div>
 
       <!-- Card 6 -->
@@ -525,7 +558,7 @@
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
         </div>
         <h3 class="display" style="font-size:1.4rem;font-weight:700;color:#fff;text-transform:uppercase;letter-spacing:.03em;margin-bottom:11px;">Confidence Building</h3>
-        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">An encouraging environment where every athlete is celebrated for their progress. We build the mental edge that separates good athletes from great ones.</p>
+        <p style="font-size:.93rem;line-height:1.75;color:rgba(255,255,255,.58);">Kids get celebrated for their own progress here, not compared to anyone else. When a kid feels faster, they play braver. And that sticks.</p>
       </div>
 
     </div>
@@ -548,7 +581,7 @@
           Built for Every<br>Young Athlete
         </h2>
         <p style="font-size:1rem;line-height:1.82;color:#555;margin-bottom:36px;">
-          PlayForge is designed for athletes of all ages who want to move better, whether they're just discovering sports or already competing at the highest level. No experience required, all skill levels welcome.
+          PlayForge is built for any kid who wants to move better. Some of our athletes are trying sports for the first time. Others already start for their teams and want more. No experience required, all skill levels welcome.
         </p>
 
         <div style="display:flex;flex-direction:column;gap:22px;">
@@ -558,7 +591,7 @@
             </div>
             <div>
               <div style="font-weight:600;color:var(--blk);margin-bottom:4px;font-size:.97rem;">Beginners just starting out</div>
-              <div style="font-size:.88rem;color:#666;line-height:1.65;">We build from the ground up with fundamentals that create lifelong athletic habits.</div>
+              <div style="font-size:.88rem;color:#666;line-height:1.65;">We start with the basics and make them stick. Good habits built now save years of bad ones later.</div>
             </div>
           </div>
           <div class="check-row">
@@ -567,7 +600,7 @@
             </div>
             <div>
               <div style="font-weight:600;color:var(--blk);margin-bottom:4px;font-size:.97rem;">Competitive youth athletes</div>
-              <div style="font-size:.88rem;color:#666;line-height:1.65;">Speed and agility are the separators at every level. We help your athlete gain a genuine edge.</div>
+              <div style="font-size:.88rem;color:#666;line-height:1.65;">At every level, the faster athlete wins the 50/50 plays. We help your kid be that athlete.</div>
             </div>
           </div>
           <div class="check-row">
@@ -576,7 +609,7 @@
             </div>
             <div>
               <div style="font-weight:600;color:var(--blk);margin-bottom:4px;font-size:.97rem;">Multi-sport kids</div>
-              <div style="font-size:.88rem;color:#666;line-height:1.65;">Speed and coordination transfer to every sport: football, soccer, basketball, track, and beyond.</div>
+              <div style="font-size:.88rem;color:#666;line-height:1.65;">Speed and coordination carry over to everything: football, soccer, basketball, track, you name it.</div>
             </div>
           </div>
         </div>
@@ -585,7 +618,7 @@
       <!-- Image -->
       <div class="reveal" style="position:relative;">
         <div style="border-radius:12px;overflow:hidden;position:relative;line-height:0;">
-          <img src="brand_assets/Knee_Drill.jpg" alt="Young athletes training"
+          <img src="brand_assets/optimized/knee-drill.webp" alt="Young athletes doing knee-drive speed drills at PlayForge Athletics" width="1400" height="788" loading="lazy" decoding="async"
                style="width:100%;height:500px;object-fit:cover;border-radius:12px;display:block;">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,13,.6) 0%,transparent 50%);border-radius:12px;"></div>
         </div>
@@ -620,7 +653,7 @@
       <!-- Coach Rheise -->
       <div class="reveal" style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,.08);">
         <div style="position:relative;line-height:0;">
-          <img src="brand_assets/Coach_Rheise.jpg" alt="Coach Rheise"
+          <img src="brand_assets/optimized/coach-rheise.webp" alt="Coach Rheise, founder of PlayForge Athletics" width="900" height="891" loading="lazy" decoding="async"
                style="width:100%;height:380px;object-fit:cover;display:block;">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,13,.75) 0%,transparent 55%);"></div>
           <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 22px;">
@@ -632,7 +665,7 @@
             Coach Rheise founded PlayForge Athletics with one goal in mind: give young athletes the speed and movement skills that change how they play, and the confidence that changes how they see themselves.
           </p>
           <p style="font-size:.97rem;line-height:1.82;color:#444;margin-bottom:24px;">
-            With a passion for youth development and athletic performance, Coach Rheise brings structured, intentional coaching to every session, creating a space where kids are challenged, supported, and celebrated for their growth.
+            Every session is structured and intentional, but kids don't come back for the drills. They come back because they get challenged, supported, and noticed. That's the whole point.
           </p>
           <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
             <div style="background:var(--gray);border-radius:9px;padding:14px 18px;border-left:3px solid var(--gold);">
@@ -654,7 +687,7 @@
       <!-- Coach Sam -->
       <div class="reveal" style="background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 4px 32px rgba(0,0,0,.08);">
         <div style="position:relative;line-height:0;">
-          <img src="brand_assets/Coach_Sam.jpg" alt="Coach Sam"
+          <img src="brand_assets/optimized/coach-sam.webp" alt="Coach Sam, speed coach at PlayForge Athletics" width="900" height="1053" loading="lazy" decoding="async"
                style="width:100%;height:380px;object-fit:cover;display:block;object-position:center top;">
           <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(13,13,13,.75) 0%,transparent 55%);"></div>
           <div style="position:absolute;bottom:0;left:0;right:0;padding:20px 22px;">
@@ -671,7 +704,7 @@
           <p style="font-size:.97rem;line-height:1.82;color:#444;margin-bottom:24px;">
             At PlayForge, he works with ages 6–99 and brings the same intensity and attention to detail he's given to pros. Your child won't just get faster, they'll learn to train and perform as an elite athlete.
           </p>
-          <div style="display:flex;gap:12px;flex-wrap:wrap;">
+          <div style="display:flex;gap:12px;flex-wrap:wrap;margin-bottom:24px;">
             <div style="background:var(--gray);border-radius:9px;padding:14px 18px;border-left:3px solid var(--gold);">
               <div class="display" style="font-size:1.25rem;font-weight:800;color:var(--blk);">4.3 Forty</div>
               <div style="font-size:.72rem;color:#999;margin-top:2px;text-transform:uppercase;letter-spacing:.06em;">Pro Speed</div>
@@ -680,6 +713,10 @@
               <div class="display" style="font-size:1.25rem;font-weight:800;color:var(--blk);">Ages 6–99</div>
               <div style="font-size:.72rem;color:#999;margin-top:2px;text-transform:uppercase;letter-spacing:.06em;">Specialization</div>
             </div>
+          </div>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <a href="mailto:PlayForgeAthletics@gmail.com" class="btn-gold" style="font-size:.9rem;padding:11px 22px;">Email Coach Sam</a>
+            <a href="tel:2813170629" class="btn-dark" style="padding:11px 20px;font-size:.9rem;">Call (281) 317-0629</a>
           </div>
         </div>
       </div>
@@ -710,7 +747,7 @@
         <div style="width:44px;height:44px;background:rgba(245,197,24,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
-        <div class="display" style="font-size:1.55rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.02em;">Mon &amp; Tue</div>
+        <div class="display" style="font-size:1.55rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.02em;">Mon · Tue · Fri</div>
         <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:9px;line-height:1.5;">Weekly Group Classes</div>
         <div style="font-size:.75rem;color:var(--gold);margin-top:6px;letter-spacing:.04em;font-weight:600;">Ages 6–13</div>
       </div>
@@ -719,8 +756,9 @@
         <div style="width:44px;height:44px;background:rgba(245,197,24,.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#F5C518" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         </div>
-        <div class="display" style="font-size:1.55rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.02em;">5:00–6:00 PM</div>
-        <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:9px;line-height:1.5;">One Hour Sessions</div>
+        <div class="display" style="font-size:1.55rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.02em;">One Hour Classes</div>
+        <div style="font-size:.82rem;color:rgba(255,255,255,.45);margin-top:9px;line-height:1.5;">Mon &amp; Tue 5:00–6:00 PM</div>
+        <div style="font-size:.75rem;color:var(--gold);margin-top:6px;letter-spacing:.04em;font-weight:600;">Fri 6:00–7:00 PM</div>
       </div>
 
       <div class="sched-badge reveal">
@@ -735,7 +773,7 @@
 
     <div class="reveal" style="margin-top:40px;background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.16);border-radius:12px;padding:30px 36px;max-width:860px;margin-left:auto;margin-right:auto;text-align:center;">
       <p style="font-size:.97rem;line-height:1.78;color:rgba(255,255,255,.62);">
-        <strong style="color:var(--gold);">Private lessons</strong> are open to all ages and can be scheduled around your needs. Reach out to Coach Rheise directly. Package deals are available for committed athletes.
+        <strong style="color:var(--gold);">Private lessons</strong> are open to all ages and scheduled around you. Reach out to Coach Rheise directly. Package deals available for athletes who train regularly.
       </p>
     </div>
 
@@ -773,7 +811,7 @@
             <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>No commitment
           </li>
           <li style="display:flex;gap:10px;align-items:center;font-size:.88rem;color:#444;">
-            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Try before you commit
+            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>See it before you decide
           </li>
         </ul>
         <a href="https://buy.stripe.com/3cI3cuawqfqlcIb6yg67S02" target="_blank" class="btn-dark" style="display:block;margin-top:26px;">Pay Now</a>
@@ -800,6 +838,7 @@
           <a href="https://buy.stripe.com/14A5kC1ZU1zv0Ztg8Q67S01" target="_blank" class="btn-dark" style="display:block;">Pay: Mondays</a>
           <a href="https://buy.stripe.com/28E3cugUO0vr23x7Ck67S00" target="_blank" class="btn-dark" style="display:block;">Pay: Tuesdays</a>
         </div>
+        <p style="font-size:.74rem;color:#999;line-height:1.55;margin-top:12px;">Want Fridays? Reach out to Coach Rheise to sign up. Online payment for Fridays is coming soon.</p>
       </div>
 
       <!-- 2x/week FEATURED -->
@@ -818,44 +857,66 @@
             <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>~8 sessions/month
           </li>
           <li style="display:flex;gap:10px;align-items:center;font-size:.88rem;color:rgba(255,255,255,.82);">
-            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Mon &amp; Tue access
+            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Pick any 2 of 3 days
           </li>
           <li style="display:flex;gap:10px;align-items:center;font-size:.88rem;color:rgba(255,255,255,.82);">
-            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Maximum results
+            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Twice the reps, faster progress
           </li>
         </ul>
         <a href="https://buy.stripe.com/aFa8wO6ga2Dz6jN8Go67S05" target="_blank" class="btn-gold" style="display:block;margin-top:26px;text-align:center;text-decoration:none;">Pay Now</a>
       </div>
 
-      <!-- Private -->
+      <!-- 3x/week -->
       <div class="p-card reveal" style="background:var(--gray);box-shadow:0 4px 28px rgba(0,0,0,.07);">
-        <div style="font-size:.75rem;font-weight:600;color:var(--red);text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;">Private Lessons</div>
-        <div class="display" style="font-size:3.4rem;font-weight:900;color:var(--blk);line-height:1;">$99</div>
-        <div style="font-size:.82rem;color:#999;margin-top:4px;">per session</div>
-        <div style="font-size:.76rem;color:#b0b0b0;margin-top:6px;line-height:1.55;margin-bottom:18px;">Each session runs between 1 and 2 hours. We do not stop when the clock hits 60 minutes. We stop when your athlete genuinely understands and can execute the skill, drill, or movement we are working on that day. The rate is the same no matter how long that takes. If the athlete or the coach has a hard stop time, please communicate that before the session starts so the time can be structured and used to its fullest.</div>
+        <div style="font-size:.75rem;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.1em;margin-bottom:14px;">Monthly · 3×/Week</div>
+        <div class="display" style="font-size:3.4rem;font-weight:900;color:var(--blk);line-height:1;">$325</div>
+        <div style="font-size:.82rem;color:#999;margin-top:4px;margin-bottom:22px;">per month</div>
         <div style="height:1px;background:rgba(0,0,0,.08);margin-bottom:22px;"></div>
         <ul style="list-style:none;display:flex;flex-direction:column;gap:10px;">
           <li style="display:flex;gap:10px;align-items:center;font-size:.88rem;color:#444;">
-            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>1-on-1 coaching
+            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>3 classes per week
           </li>
           <li style="display:flex;gap:10px;align-items:center;font-size:.88rem;color:#444;">
-            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Flexible scheduling
+            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Mon, Tue &amp; Fri access
           </li>
           <li style="display:flex;gap:10px;align-items:center;font-size:.88rem;color:#444;">
-            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Package deals available
+            <div class="pcheck"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="#0D0D0D" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg></div>Best rate per class
           </li>
         </ul>
-        <a href="mailto:PlayForgeAthletics@gmail.com" class="btn-red" style="display:block;margin-top:26px;">Contact Coach</a>
+        <a href="mailto:PlayForgeAthletics@gmail.com?subject=3x%2FWeek%20Plan" class="btn-dark" style="display:block;margin-top:26px;">Contact Coach Rheise</a>
       </div>
 
-      <!-- Private Small Group Training — spans full row -->
+      <!-- Private Lessons band -->
+      <div class="p-card reveal" style="grid-column:1/-1;background:var(--blk);box-shadow:0 12px 48px rgba(0,0,0,.18);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold));"></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:28px;">
+          <div style="max-width:380px;">
+            <div style="font-size:.75rem;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Private Lessons</div>
+            <h3 class="display" style="font-size:2rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:10px;">One Kid,<br>One Coach</h3>
+            <p style="font-size:.88rem;color:rgba(255,255,255,.45);line-height:1.68;">Your athlete gets the coach's full attention for the whole session. Goals set around your kid, pace set by your kid. Package deals available for regulars.</p>
+          </div>
+          <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:stretch;">
+            <div style="background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.18);border-radius:10px;padding:22px 26px;text-align:center;min-width:120px;">
+              <div class="display" style="font-size:2.8rem;font-weight:900;color:var(--gold);line-height:1;">$99</div>
+              <div style="font-size:.72rem;color:rgba(255,255,255,.35);margin-top:5px;">per session</div>
+              <div class="display" style="font-size:.88rem;font-weight:700;color:#fff;margin-top:12px;text-transform:uppercase;letter-spacing:.04em;">1-on-1</div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);">
+          <p style="font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:16px;">Every session runs 1 to 2 hours. We don't stop when the clock hits 60 minutes. We stop when your athlete truly gets the skill we came to work on that day, and the rate stays the same however long that takes. If you or the coach have a hard stop, just let us know before the session starts so the time gets used well.</p>
+          <a href="mailto:PlayForgeAthletics@gmail.com" class="btn-gold" style="display:inline-block;">Contact Coach to Book</a>
+        </div>
+      </div>
+
+      <!-- Private Small Group Training band -->
       <div class="p-card reveal" style="grid-column:1/-1;background:var(--blk);box-shadow:0 12px 48px rgba(0,0,0,.18);position:relative;overflow:hidden;">
         <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--gold),var(--red));"></div>
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:28px;">
           <div style="max-width:380px;">
             <div style="font-size:.75rem;font-weight:600;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Private Small Group Training</div>
             <h3 class="display" style="font-size:2rem;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:10px;">Train Together,<br>Save Together</h3>
-            <p style="font-size:.88rem;color:rgba(255,255,255,.45);line-height:1.68;">Bring a group and get focused, individualized coaching at a fraction of the private lesson rate. Perfect for teammates or friends training together.</p>
+            <p style="font-size:.88rem;color:rgba(255,255,255,.45);line-height:1.68;">Grab a teammate or two and split a private session at a fraction of the rate. Kids push harder training next to their friends anyway.</p>
           </div>
           <div style="display:flex;gap:16px;flex-wrap:wrap;align-items:stretch;">
             <div style="background:rgba(245,197,24,.06);border:1px solid rgba(245,197,24,.18);border-radius:10px;padding:22px 26px;text-align:center;min-width:120px;">
@@ -877,7 +938,7 @@
           </div>
         </div>
         <div style="margin-top:26px;padding-top:22px;border-top:1px solid rgba(255,255,255,.08);">
-          <p style="font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:16px;">Each session runs between 1 and 2 hours. We do not stop when the clock hits 60 minutes. We stop when every athlete in the group can genuinely execute the skill, drill, or movement we covered that day. Same flat rate per person, no matter how long the session runs. If any athlete or the coach has a hard stop time, please communicate that before the session starts so the time can be structured and used to its fullest.</p>
+          <p style="font-size:.8rem;color:rgba(255,255,255,.4);line-height:1.6;margin-bottom:16px;">Same deal as private lessons: sessions run 1 to 2 hours, and we stop when every athlete in the group can actually do what we came to work on. Same flat rate per person no matter how long it runs. If anyone has a hard stop, tell us before we start.</p>
           <a href="mailto:PlayForgeAthletics@gmail.com" class="btn-gold" style="display:inline-block;">Contact Coach to Book</a>
         </div>
       </div>
@@ -902,7 +963,7 @@
       Your Athlete's<br><span style="color:var(--gold);">Next Level</span><br>Starts Here.
     </h2>
     <p style="font-size:1.05rem;line-height:1.8;color:rgba(255,255,255,.58);max-width:540px;margin:0 auto 38px;">
-      Join PlayForge Athletics and give your young athlete the speed, agility, and confidence to compete at their best. Drop in for a class or commit to a monthly plan. We're ready when you are.
+      The easiest way to know if PlayForge is right for your kid? Drop into one class and watch them walk out. If they love it, and they usually do, pick the plan that fits your week.
     </p>
     <div style="background:rgba(245,197,24,.08);border:1px solid rgba(245,197,24,.2);border-radius:10px;padding:20px 28px;margin-bottom:32px;max-width:560px;margin-left:auto;margin-right:auto;">
       <div class="display" style="color:var(--gold);font-size:.85rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">First Time? Start Here</div>
@@ -913,8 +974,8 @@
       <a href="mailto:PlayForgeAthletics@gmail.com" class="btn-outline">Email Coach Rheise</a>
       <a href="tel:2813170629" class="btn-outline">Call: (281) 317-0629</a>
     </div>
-    <p style="font-size:.82rem;color:rgba(255,255,255,.3);margin-top:26px;">
-      Hosted at J5 Athletics · League City, TX · Mon &amp; Tue 5–6 PM · PlayForgeAthletics@gmail.com
+    <p style="font-size:.82rem;color:rgba(255,255,255,.58);margin-top:26px;">
+      Hosted at J5 Athletics · League City, TX · Mon &amp; Tue 5–6 PM · Fri 6–7 PM · PlayForgeAthletics@gmail.com
     </p>
   </div>
 </section>
@@ -926,16 +987,16 @@
 <footer style="background:#0A0A0A;border-top:1px solid rgba(245,197,24,.1);padding:36px 28px;">
   <div style="max-width:1200px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:18px;">
     <a href="#hero" style="text-decoration:none;">
-      <img src="brand_assets/LOGO3_PF.png" alt="PlayForge Athletics" class="logo-fix" style="height:34px;width:auto;opacity:.8;">
+      <img src="brand_assets/optimized/logo-nav.webp" alt="PlayForge Athletics" width="320" height="173" loading="lazy" decoding="async" style="height:34px;width:auto;opacity:.8;">
     </a>
-    <div style="font-size:.82rem;color:rgba(255,255,255,.3);text-align:center;">
-      © 2025 PlayForge Athletics · League City, TX ·
-      <a href="mailto:PlayForgeAthletics@gmail.com" style="color:rgba(255,255,255,.3);text-decoration:none;transition:color .2s;"
-         onmouseover="this.style.color='#F5C518'" onmouseout="this.style.color='rgba(255,255,255,.3)'">PlayForgeAthletics@gmail.com</a>
-      · <a href="tel:2813170629" style="color:rgba(255,255,255,.3);text-decoration:none;transition:color .2s;"
-         onmouseover="this.style.color='#F5C518'" onmouseout="this.style.color='rgba(255,255,255,.3)'">(281) 317-0629</a>
+    <div style="font-size:.82rem;color:rgba(255,255,255,.58);text-align:center;">
+      © 2026 PlayForge Athletics · League City, TX ·
+      <a href="mailto:PlayForgeAthletics@gmail.com" style="color:rgba(255,255,255,.58);text-decoration:none;transition:color .2s;"
+         onmouseover="this.style.color='#F5C518'" onmouseout="this.style.color='rgba(255,255,255,.58)'">PlayForgeAthletics@gmail.com</a>
+      · <a href="tel:2813170629" style="color:rgba(255,255,255,.58);text-decoration:none;transition:color .2s;"
+         onmouseover="this.style.color='#F5C518'" onmouseout="this.style.color='rgba(255,255,255,.58)'">(281) 317-0629</a>
     </div>
-    <div style="font-size:.78rem;color:rgba(255,255,255,.22);text-transform:uppercase;letter-spacing:.08em;">Ages 4–99 · Speed &amp; Agility</div>
+    <div style="font-size:.78rem;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.08em;">Ages 4–99 · Speed &amp; Agility</div>
   </div>
 </footer>
 
@@ -945,9 +1006,15 @@
   const hamBtn   = document.getElementById('ham-btn');
   const mobileNav = document.getElementById('mobile-nav');
   hamBtn.addEventListener('click', () => {
-    mobileNav.classList.toggle('open');
+    const open = mobileNav.classList.toggle('open');
+    hamBtn.setAttribute('aria-expanded', String(open));
+    hamBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
   });
-  function closeNav() { mobileNav.classList.remove('open'); }
+  function closeNav() {
+    mobileNav.classList.remove('open');
+    hamBtn.setAttribute('aria-expanded', 'false');
+    hamBtn.setAttribute('aria-label', 'Open menu');
+  }
 
   // ── Smooth scroll ──
   document.querySelectorAll('a[href^="#"]').forEach(a => {
@@ -957,7 +1024,6 @@
     });
   });
 
-  // Scroll-reveal removed — content always visible for reliability
 </script>
 
 
