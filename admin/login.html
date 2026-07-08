@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlayForge Admin — Sign In</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #F5C518;
+      --red:  #E63329;
+      --bg:   #0D0D0D;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .bg-glow {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 500px 500px at 50% 40%, rgba(245,197,24,0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 300px 300px at 80% 80%, rgba(230,51,41,0.03) 0%, transparent 70%);
+    }
+
+    .gold-bar {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--gold) 40%, var(--gold) 60%, transparent 100%);
+      opacity: 0.7;
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: #141414;
+      border: 1px solid rgba(245,197,24,0.14);
+      border-radius: 2px;
+      width: 380px;
+      padding: 48px 40px 40px;
+      box-shadow:
+        0 0 0 1px rgba(0,0,0,0.6),
+        0 40px 80px rgba(0,0,0,0.7),
+        0 8px 16px rgba(0,0,0,0.5);
+    }
+
+    .logo-row {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+    .logo-row img { height: 50px; object-fit: contain; }
+
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #fff;
+      text-align: center;
+    }
+
+    .sub {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.28);
+      text-align: center;
+      margin-top: 4px;
+      margin-bottom: 32px;
+    }
+
+    .field { margin-bottom: 14px; }
+
+    .field label {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.38);
+      margin-bottom: 7px;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 11px 13px;
+      background: #0D0D0D;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 2px;
+      color: #fff;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .field input:focus {
+      border-color: rgba(245,197,24,0.45);
+      box-shadow: 0 0 0 3px rgba(245,197,24,0.07);
+    }
+    .field input::placeholder { color: rgba(255,255,255,0.15); }
+
+    .btn-submit {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      margin-top: 20px;
+      background: var(--gold);
+      color: #0D0D0D;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+    }
+    .btn-submit:hover  { background: #ffd63a; }
+    .btn-submit:active { transform: translateY(1px); background: #e0b315; }
+    .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+    .err {
+      margin-top: 12px;
+      padding: 10px 13px;
+      background: rgba(230,51,41,0.08);
+      border: 1px solid rgba(230,51,41,0.22);
+      border-radius: 2px;
+      color: #E63329;
+      font-size: 13px;
+      display: none;
+    }
+    .err.show { display: block; }
+
+    .footer-line {
+      margin-top: 28px;
+      text-align: center;
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      color: rgba(255,255,255,0.14);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <div class="gold-bar"></div>
+  <div class="bg-glow"></div>
+
+  <div class="card">
+    <div class="logo-row">
+      <img src="../brand_assets/LOGO3_PF.png" alt="PlayForge Athletics">
+    </div>
+    <h1>Admin Portal</h1>
+    <p class="sub">Authorized Access Only</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label for="email">Email</label>
+        <input type="email" id="email" placeholder="coach@playforge.com" required autocomplete="email">
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input type="password" id="password" placeholder="••••••••••" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-submit" id="submitBtn">Sign In</button>
+      <div class="err" id="errMsg"></div>
+    </form>
+
+    <p class="footer-line">PlayForge Athletics — Internal Use Only</p>
+  </div>
+
+  <script>
+    // ============================================================
+    // SUPABASE CONFIG — replace both values after Supabase setup
+    const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
+    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+    // ============================================================
+
+    const { createClient } = supabase;
+    const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Redirect immediately if already signed in
+    sb.auth.getSession().then(({ data: { session } }) => {
+      if (session) window.location.href = 'index.html';
+    });
+
+    const form    = document.getElementById('loginForm');
+    const btn     = document.getElementById('submitBtn');
+    const errMsg  = document.getElementById('errMsg');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      btn.textContent = 'Signing in…';
+      errMsg.classList.remove('show');
+
+      const { error } = await sb.auth.signInWithPassword({
+        email:    document.getElementById('email').value.trim(),
+        password: document.getElementById('password').value
+      });
+
+      if (error) {
+        errMsg.textContent = error.message;
+        errMsg.classList.add('show');
+        btn.disabled = false;
+        btn.textContent = 'Sign In';
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+</body>
+</html>

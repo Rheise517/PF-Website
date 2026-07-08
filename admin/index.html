@@ -1,0 +1,1556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlayForge Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold:    #F5C518;
+      --red:     #E63329;
+      --bg:      #0D0D0D;
+      --surf:    #141414;
+      --surf2:   #1C1C1C;
+      --surf3:   #242424;
+      --border:  rgba(255,255,255,0.07);
+      --bgold:   rgba(245,197,24,0.15);
+      --text:    #FFFFFF;
+      --text2:   rgba(255,255,255,0.55);
+      --text3:   rgba(255,255,255,0.25);
+      --sidebar: 220px;
+    }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── Layout ─────────────────────────────── */
+    .app { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: var(--sidebar);
+      min-height: 100vh;
+      background: var(--surf);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0; left: 0; bottom: 0;
+      z-index: 100;
+    }
+
+    .main {
+      margin-left: var(--sidebar);
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── Sidebar ─────────────────────────────── */
+    .sidebar-logo {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .sidebar-logo img { height: 36px; object-fit: contain; }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 12px 0;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text2);
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: color 0.12s, background 0.12s, border-color 0.12s;
+      user-select: none;
+    }
+    .nav-item:hover {
+      color: var(--text);
+      background: rgba(255,255,255,0.04);
+    }
+    .nav-item.active {
+      color: var(--gold);
+      border-left-color: var(--gold);
+      background: rgba(245,197,24,0.06);
+    }
+    .nav-item .nav-icon { font-size: 15px; width: 18px; text-align: center; }
+
+    .sidebar-footer {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .user-email {
+      font-size: 11px;
+      color: var(--text3);
+      margin-bottom: 10px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .btn-signout {
+      display: block;
+      width: 100%;
+      padding: 8px 12px;
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 2px;
+      color: var(--text2);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .btn-signout:hover { border-color: var(--red); color: var(--red); }
+
+    /* ── Top Bar ─────────────────────────────── */
+    .topbar {
+      height: 52px;
+      background: var(--surf);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      gap: 12px;
+    }
+    .topbar-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+    .topbar-date {
+      font-size: 12px;
+      color: var(--text3);
+      margin-left: auto;
+    }
+
+    /* ── Content ─────────────────────────────── */
+    #content { padding: 28px; }
+
+    /* ── Dashboard ───────────────────────────── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .stat-card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 20px 22px;
+    }
+    .stat-icon { font-size: 18px; margin-bottom: 10px; }
+    .stat-num {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--gold);
+      letter-spacing: -0.02em;
+    }
+    .stat-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-top: 4px;
+    }
+
+    .section-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .panel {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 20px;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .panel-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text2);
+    }
+
+    .session-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .session-row:last-child { border-bottom: none; }
+    .session-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--gold);
+      flex-shrink: 0;
+    }
+    .session-info { flex: 1; }
+    .session-date { font-size: 13px; font-weight: 500; }
+    .session-prog { font-size: 12px; color: var(--text2); margin-top: 1px; }
+    .session-time {
+      font-size: 12px;
+      color: var(--text3);
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+    }
+
+    .athlete-row-mini {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .athlete-row-mini:last-child { border-bottom: none; }
+    .athlete-mini-info { flex: 1; }
+    .athlete-mini-name { font-size: 13px; font-weight: 500; }
+    .athlete-mini-prog { font-size: 12px; color: var(--text2); margin-top: 1px; }
+    .athlete-mini-age { font-size: 12px; color: var(--text3); }
+
+    /* ── Avatar ──────────────────────────────── */
+    .avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: rgba(245,197,24,0.15);
+      border: 1px solid rgba(245,197,24,0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+    .avatar-sm {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: rgba(245,197,24,0.12);
+      border: 1px solid rgba(245,197,24,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    /* ── View Header ─────────────────────────── */
+    .view-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+    }
+
+    /* ── Search ──────────────────────────────── */
+    .search-input {
+      padding: 9px 13px;
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      width: 260px;
+      transition: border-color 0.12s;
+    }
+    .search-input:focus { border-color: rgba(245,197,24,0.35); }
+    .search-input::placeholder { color: var(--text3); }
+
+    /* ── Table ───────────────────────────────── */
+    .table-wrap {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    .data-table th {
+      padding: 11px 16px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      border-bottom: 1px solid var(--border);
+      background: var(--surf2);
+    }
+    .data-table td {
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: middle;
+    }
+    .data-table tr:last-child td { border-bottom: none; }
+    .data-table tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+    .athlete-cell { display: flex; align-items: center; gap: 10px; }
+    .athlete-name { font-weight: 500; }
+    .table-empty {
+      padding: 40px;
+      text-align: center;
+      color: var(--text3);
+      font-size: 13px;
+    }
+    .text-muted { color: var(--text2); }
+    .text-dim   { color: var(--text3); }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(245,197,24,0.1);
+      border: 1px solid rgba(245,197,24,0.2);
+      border-radius: 2px;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-right: 4px;
+    }
+
+    .actions-cell { text-align: right; white-space: nowrap; }
+
+    /* ── Programs ────────────────────────────── */
+    .programs-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+
+    .prog-card {
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 20px;
+    }
+    .prog-card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .prog-name {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .prog-when {
+      font-size: 12px;
+      color: var(--gold);
+      font-weight: 500;
+      margin-top: 2px;
+    }
+    .prog-desc {
+      font-size: 12px;
+      color: var(--text2);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+    .prog-cap-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .cap-bar-bg {
+      flex: 1;
+      height: 4px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .cap-bar-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+    .cap-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+
+    .btn-roster {
+      display: block;
+      width: 100%;
+      padding: 8px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text2);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .btn-roster:hover { border-color: var(--gold); color: var(--gold); }
+
+    /* ── Calendar ────────────────────────────── */
+    .cal-wrap { max-width: 100%; }
+    .cal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .cal-month-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+    .cal-nav {
+      padding: 6px 12px;
+      background: var(--surf);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text);
+      font-size: 16px;
+      cursor: pointer;
+      transition: border-color 0.12s;
+    }
+    .cal-nav:hover { border-color: var(--gold); }
+
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .cal-day-name {
+      background: var(--surf2);
+      padding: 8px;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+    .cal-cell {
+      background: var(--surf);
+      min-height: 90px;
+      padding: 8px;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .cal-cell:hover { background: var(--surf2); }
+    .cal-cell.empty { background: rgba(0,0,0,0.3); cursor: default; }
+    .cal-cell.past  { opacity: 0.5; }
+    .cal-cell.today { background: rgba(245,197,24,0.07); border-left: 2px solid var(--gold); }
+
+    .cal-day-num {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 4px;
+    }
+    .cal-cell.today .cal-day-num { color: var(--gold); }
+
+    .cal-session-pill {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(245,197,24,0.15);
+      border-left: 2px solid var(--gold);
+      color: var(--gold);
+      padding: 2px 5px;
+      border-radius: 1px;
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cal-cancelled-pill {
+      display: block;
+      font-size: 10px;
+      font-weight: 600;
+      background: rgba(230,51,41,0.1);
+      border-left: 2px solid var(--red);
+      color: var(--red);
+      padding: 2px 5px;
+      border-radius: 1px;
+      margin-top: 3px;
+    }
+
+    /* ── Buttons ─────────────────────────────── */
+    .btn-primary {
+      padding: 9px 18px;
+      background: var(--gold);
+      color: #0D0D0D;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.12s, transform 0.08s;
+    }
+    .btn-primary:hover  { background: #ffd63a; }
+    .btn-primary:active { transform: translateY(1px); }
+
+    .btn-cancel {
+      padding: 9px 18px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text2);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    .btn-cancel:hover { border-color: rgba(255,255,255,0.2); color: var(--text); }
+
+    .btn-text {
+      background: none;
+      border: none;
+      color: var(--gold);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      padding: 0;
+      opacity: 0.7;
+      transition: opacity 0.12s;
+    }
+    .btn-text:hover { opacity: 1; }
+
+    .btn-icon {
+      padding: 4px 10px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text2);
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color 0.12s, color 0.12s;
+      margin-left: 4px;
+    }
+    .btn-icon:hover         { border-color: rgba(255,255,255,0.2); color: var(--text); }
+    .btn-icon.danger:hover  { border-color: var(--red); color: var(--red); }
+    .btn-icon.warning:hover { border-color: #e0a000; color: #e0a000; }
+
+    /* ── Modal ───────────────────────────────── */
+    #modalOverlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 200;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 60px 20px 20px;
+      overflow-y: auto;
+    }
+
+    .modal {
+      background: var(--surf);
+      border: 1px solid rgba(245,197,24,0.12);
+      border-radius: 3px;
+      width: 100%;
+      max-width: 560px;
+      box-shadow: 0 32px 64px rgba(0,0,0,0.7);
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      border-bottom: 1px solid var(--border);
+    }
+    #modalTitle {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text3);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+      padding: 2px 6px;
+      transition: color 0.12s;
+    }
+    .modal-close:hover { color: var(--text); }
+
+    #modalBody { padding: 22px; }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      padding-top: 20px;
+      margin-top: 8px;
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Forms ───────────────────────────────── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-field { display: flex; flex-direction: column; gap: 6px; }
+    .form-field.full { grid-column: 1 / -1; }
+
+    .form-field label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+
+    .form-field input,
+    .form-field select,
+    .form-field textarea {
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.12s;
+    }
+    .form-field input:focus,
+    .form-field select:focus,
+    .form-field textarea:focus {
+      border-color: rgba(245,197,24,0.4);
+    }
+    .form-field input::placeholder,
+    .form-field textarea::placeholder { color: var(--text3); }
+    .form-field select { cursor: pointer; }
+    .form-field select option { background: var(--surf2); }
+    .form-field textarea { resize: vertical; line-height: 1.5; }
+
+    .check-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      cursor: pointer;
+      color: var(--text2);
+    }
+    .check-row input[type="checkbox"] { accent-color: var(--gold); width: 14px; height: 14px; }
+
+    /* ── Day session modal ───────────────────── */
+    .day-sessions { margin-bottom: 20px; }
+    .day-session-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .day-session-row:last-child { border-bottom: none; }
+    .day-session-row.cancelled { opacity: 0.5; }
+    .day-session-prog { font-size: 14px; font-weight: 500; }
+    .day-session-notes { font-size: 12px; color: var(--text2); margin-top: 2px; }
+    .day-session-actions { display: flex; gap: 6px; }
+
+    .add-session-form {
+      background: var(--surf2);
+      border-radius: 2px;
+      padding: 14px;
+      margin-bottom: 4px;
+    }
+    .form-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+      margin-bottom: 10px;
+    }
+    .form-row {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .select-input, .text-input {
+      padding: 8px 10px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      outline: none;
+    }
+    .select-input { min-width: 160px; cursor: pointer; }
+    .text-input { flex: 1; }
+    .select-input option { background: var(--surf2); }
+    .select-input:focus, .text-input:focus { border-color: rgba(245,197,24,0.4); }
+
+    /* ── Roster modal ────────────────────────── */
+    .roster-list { margin-bottom: 4px; }
+    .roster-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .roster-row:last-child { border-bottom: none; }
+    .roster-info { flex: 1; }
+    .roster-name { font-size: 13px; font-weight: 500; }
+    .roster-detail { font-size: 11px; color: var(--text2); margin-top: 1px; }
+    .roster-contact { font-size: 11px; color: var(--text3); }
+
+    /* ── Empty state ─────────────────────────── */
+    .empty-state {
+      padding: 24px 0;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text3);
+    }
+    .empty-full {
+      grid-column: 1 / -1;
+      padding: 48px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--text3);
+    }
+
+    /* ── Toast ───────────────────────────────── */
+    #toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--surf2);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      border-radius: 2px;
+      padding: 12px 18px;
+      font-size: 13px;
+      color: var(--text);
+      z-index: 999;
+      opacity: 0;
+      transform: translateY(8px);
+      transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none;
+    }
+    #toast.show { opacity: 1; transform: translateY(0); }
+
+    /* ── Loading ─────────────────────────────── */
+    #loadingScreen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .loading-logo { height: 40px; opacity: 0.7; }
+    .loading-text {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text3);
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="loadingScreen">
+  <img class="loading-logo" src="../brand_assets/LOGO3_PF.png" alt="PlayForge">
+  <div class="loading-text">Loading…</div>
+</div>
+
+<div class="app" style="display:none" id="appWrap">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <img src="../brand_assets/LOGO3_PF.png" alt="PlayForge Athletics">
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-view="dashboard" onclick="navigate('dashboard')">
+        <span class="nav-icon">⬛</span> Dashboard
+      </div>
+      <div class="nav-item" data-view="athletes" onclick="navigate('athletes')">
+        <span class="nav-icon">👟</span> Athletes
+      </div>
+      <div class="nav-item" data-view="programs" onclick="navigate('programs')">
+        <span class="nav-icon">📋</span> Programs
+      </div>
+      <div class="nav-item" data-view="calendar" onclick="navigate('calendar')">
+        <span class="nav-icon">📅</span> Calendar
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-email" id="userEmail"></div>
+      <button class="btn-signout" onclick="signOut()">Sign Out</button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="topbar">
+      <span class="topbar-title" id="pageTitle">Dashboard</span>
+      <span class="topbar-date" id="topbarDate"></span>
+    </header>
+    <div id="content"></div>
+  </main>
+
+</div>
+
+<!-- Modal -->
+<div id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <span id="modalTitle"></span>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+// ============================================================
+// SUPABASE CONFIG — replace both values after Supabase setup
+const SUPABASE_URL      = 'YOUR_SUPABASE_URL';
+const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+// ============================================================
+
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ── State ────────────────────────────────────
+const S = {
+  view: 'dashboard',
+  athletes: [],
+  programs: [],
+  enrollments: [],
+  sessions: [],
+  calYear:  new Date().getFullYear(),
+  calMonth: new Date().getMonth(),
+};
+
+// ── Init ─────────────────────────────────────
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'login.html'; return; }
+
+  document.getElementById('userEmail').textContent = session.user.email;
+  document.getElementById('topbarDate').textContent = new Date().toLocaleDateString('en-US', {
+    weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'
+  });
+
+  await loadAll();
+
+  document.getElementById('loadingScreen').style.display = 'none';
+  document.getElementById('appWrap').style.display = 'flex';
+  navigate('dashboard');
+}
+
+// ── Data ─────────────────────────────────────
+async function loadAll() {
+  const [a, p, e, sess] = await Promise.all([
+    sb.from('athletes').select('*').order('name'),
+    sb.from('programs').select('*').order('name'),
+    sb.from('enrollments').select('*').eq('active', true),
+    sb.from('sessions').select('*').order('session_date')
+  ]);
+  S.athletes    = a.data    || [];
+  S.programs    = p.data    || [];
+  S.enrollments = e.data    || [];
+  S.sessions    = sess.data || [];
+}
+
+// ── Navigation ────────────────────────────────
+function navigate(view) {
+  S.view = view;
+  document.querySelectorAll('.nav-item').forEach(el => {
+    el.classList.toggle('active', el.dataset.view === view);
+  });
+  const titles = { dashboard: 'Dashboard', athletes: 'Athletes', programs: 'Programs', calendar: 'Calendar' };
+  document.getElementById('pageTitle').textContent = titles[view] || view;
+
+  const c = document.getElementById('content');
+  switch (view) {
+    case 'dashboard': c.innerHTML = renderDashboard(); break;
+    case 'athletes':  c.innerHTML = renderAthletes();  break;
+    case 'programs':  c.innerHTML = renderPrograms();  break;
+    case 'calendar':  c.innerHTML = renderCalendar();  break;
+  }
+}
+
+// ── Dashboard ─────────────────────────────────
+function renderDashboard() {
+  const today   = new Date();
+  today.setHours(0,0,0,0);
+  const weekEnd = new Date(today);
+  weekEnd.setDate(today.getDate() + 7);
+
+  const upcoming = S.sessions.filter(s => {
+    const d = new Date(s.session_date + 'T00:00:00');
+    return d >= today && d <= weekEnd && !s.cancelled;
+  });
+
+  const totalEnrolled = new Set(S.enrollments.map(e => e.athlete_id)).size;
+
+  return `
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">👟</div>
+        <div class="stat-num">${S.athletes.length}</div>
+        <div class="stat-label">Athletes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <div class="stat-num">${S.programs.length}</div>
+        <div class="stat-label">Programs</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">📅</div>
+        <div class="stat-num">${upcoming.length}</div>
+        <div class="stat-label">This Week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-num">${totalEnrolled}</div>
+        <div class="stat-label">Enrolled</div>
+      </div>
+    </div>
+    <div class="section-row">
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Upcoming Sessions</h3>
+          <button class="btn-text" onclick="navigate('calendar')">View Calendar →</button>
+        </div>
+        ${upcoming.length === 0
+          ? `<p class="empty-state">No sessions this week. Add some in Calendar.</p>`
+          : upcoming.slice(0,6).map(s => {
+              const prog = S.programs.find(p => p.id === s.program_id);
+              const d = new Date(s.session_date + 'T00:00:00');
+              return `
+                <div class="session-row">
+                  <div class="session-dot"></div>
+                  <div class="session-info">
+                    <div class="session-date">${d.toLocaleDateString('en-US',{weekday:'long',month:'short',day:'numeric'})}</div>
+                    <div class="session-prog">${prog ? esc(prog.name) : 'Unknown Program'}</div>
+                  </div>
+                  ${prog?.time_start ? `<div class="session-time">${fmtTime(prog.time_start)}</div>` : ''}
+                </div>`;
+            }).join('')}
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <h3 class="panel-title">Athletes</h3>
+          <button class="btn-text" onclick="navigate('athletes')">View All →</button>
+        </div>
+        ${S.athletes.length === 0
+          ? `<p class="empty-state">No athletes yet. Add one in Athletes.</p>`
+          : S.athletes.slice(0,6).map(a => {
+              const initials = initStr(a.name);
+              const progs = S.enrollments
+                .filter(e => e.athlete_id === a.id)
+                .map(e => S.programs.find(p => p.id === e.program_id)?.name)
+                .filter(Boolean);
+              return `
+                <div class="athlete-row-mini">
+                  <div class="avatar">${initials}</div>
+                  <div class="athlete-mini-info">
+                    <div class="athlete-mini-name">${esc(a.name)}</div>
+                    <div class="athlete-mini-prog">${progs.length ? progs.join(', ') : 'Not enrolled'}</div>
+                  </div>
+                  ${a.age ? `<div class="athlete-mini-age">Age ${a.age}</div>` : ''}
+                </div>`;
+            }).join('')}
+      </div>
+    </div>`;
+}
+
+// ── Athletes ──────────────────────────────────
+function renderAthletes() {
+  return `
+    <div class="view-header">
+      <input type="search" class="search-input" placeholder="Search athletes or parents…" oninput="filterAthletes(this.value)">
+      <button class="btn-primary" onclick="openAthleteModal()">+ Add Athlete</button>
+    </div>
+    <div class="table-wrap">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Athlete</th><th>Age</th><th>Programs</th>
+            <th>Parent</th><th>Contact</th><th></th>
+          </tr>
+        </thead>
+        <tbody id="athletesTbody">${athleteRows(S.athletes)}</tbody>
+      </table>
+      ${S.athletes.length === 0 ? `<div class="table-empty">No athletes yet — add your first one above.</div>` : ''}
+    </div>`;
+}
+
+function athleteRows(list) {
+  return list.map(a => {
+    const progs = S.enrollments
+      .filter(e => e.athlete_id === a.id)
+      .map(e => S.programs.find(p => p.id === e.program_id)?.name)
+      .filter(Boolean);
+    return `
+      <tr>
+        <td><div class="athlete-cell"><div class="avatar-sm">${initStr(a.name)}</div><span class="athlete-name">${esc(a.name)}</span></div></td>
+        <td class="text-muted">${a.age || '—'}</td>
+        <td>${progs.length ? progs.map(p => `<span class="badge">${esc(p)}</span>`).join('') : '<span class="text-dim">None</span>'}</td>
+        <td class="text-muted">${a.parent_name ? esc(a.parent_name) : '—'}</td>
+        <td class="text-muted">${a.parent_phone || a.parent_email ? esc(a.parent_phone || a.parent_email) : '—'}</td>
+        <td class="actions-cell">
+          <button class="btn-icon" onclick="openAthleteModal('${a.id}')">Edit</button>
+          <button class="btn-icon danger" onclick="deleteAthlete('${a.id}','${esc(a.name)}')">Delete</button>
+        </td>
+      </tr>`;
+  }).join('') || `<tr><td colspan="6"><div class="table-empty">No results.</div></td></tr>`;
+}
+
+function filterAthletes(q) {
+  const qL = q.toLowerCase();
+  const filtered = qL
+    ? S.athletes.filter(a =>
+        a.name.toLowerCase().includes(qL) ||
+        (a.parent_name && a.parent_name.toLowerCase().includes(qL)))
+    : S.athletes;
+  document.getElementById('athletesTbody').innerHTML = athleteRows(filtered);
+}
+
+// ── Programs ──────────────────────────────────
+function renderPrograms() {
+  return `
+    <div class="view-header">
+      <div></div>
+      <button class="btn-primary" onclick="openProgramModal()">+ Add Program</button>
+    </div>
+    <div class="programs-grid">
+      ${S.programs.length === 0
+        ? `<div class="empty-full">No programs yet — add your first one.</div>`
+        : S.programs.map(p => {
+            const count = S.enrollments.filter(e => e.program_id === p.id).length;
+            const pct   = p.capacity ? Math.min(Math.round((count / p.capacity) * 100), 100) : 0;
+            const timeStr = [p.time_start && fmtTime(p.time_start), p.time_end && fmtTime(p.time_end)].filter(Boolean).join(' – ');
+            return `
+              <div class="prog-card">
+                <div class="prog-card-top">
+                  <div>
+                    <div class="prog-name">${esc(p.name)}</div>
+                    <div class="prog-when">${[p.day_of_week, timeStr].filter(Boolean).join(' · ')}</div>
+                  </div>
+                  <div><button class="btn-icon" onclick="openProgramModal('${p.id}')">Edit</button></div>
+                </div>
+                ${p.description ? `<div class="prog-desc">${esc(p.description)}</div>` : ''}
+                <div class="prog-cap-row">
+                  <div class="cap-bar-bg"><div class="cap-bar-fill" style="width:${pct}%"></div></div>
+                  <span class="cap-label">${count}${p.capacity ? ` / ${p.capacity}` : ''} athletes</span>
+                </div>
+                <button class="btn-roster" onclick="viewRoster('${p.id}')">View Roster (${count})</button>
+              </div>`;
+          }).join('')}
+    </div>`;
+}
+
+// ── Calendar ──────────────────────────────────
+function renderCalendar() {
+  const { calYear: yr, calMonth: mo } = S;
+  const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const DAYS   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  const today    = new Date(); today.setHours(0,0,0,0);
+  const firstDay = new Date(yr, mo, 1).getDay();
+  const daysInMo = new Date(yr, mo + 1, 0).getDate();
+
+  const sessionMap = {};
+  S.sessions.forEach(s => {
+    if (!sessionMap[s.session_date]) sessionMap[s.session_date] = [];
+    sessionMap[s.session_date].push(s);
+  });
+
+  const headers = DAYS.map(d => `<div class="cal-day-name">${d}</div>`).join('');
+  let cells = '';
+
+  for (let i = 0; i < firstDay; i++) cells += `<div class="cal-cell empty"></div>`;
+
+  for (let d = 1; d <= daysInMo; d++) {
+    const ds   = `${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const sArr = sessionMap[ds] || [];
+    const date = new Date(yr, mo, d);
+    const cls  = [
+      'cal-cell',
+      date.getTime() === today.getTime() ? 'today' : '',
+      date < today ? 'past' : ''
+    ].filter(Boolean).join(' ');
+
+    cells += `
+      <div class="${cls}" onclick="openDayModal('${ds}')">
+        <div class="cal-day-num">${d}</div>
+        ${sArr.filter(s => !s.cancelled).map(s => {
+          const prog = S.programs.find(p => p.id === s.program_id);
+          return `<div class="cal-session-pill">${prog ? esc(prog.name.split(' ')[0]) : 'Session'}</div>`;
+        }).join('')}
+        ${sArr.some(s => s.cancelled) ? `<div class="cal-cancelled-pill">Cancelled</div>` : ''}
+      </div>`;
+  }
+
+  return `
+    <div class="cal-wrap">
+      <div class="cal-header">
+        <button class="cal-nav" onclick="calPrev()">←</button>
+        <div class="cal-month-title">${MONTHS[mo]} ${yr}</div>
+        <button class="cal-nav" onclick="calNext()">→</button>
+        <button class="btn-primary" style="margin-left:auto" onclick="openAddSessionModal()">+ Add Session</button>
+      </div>
+      <div class="cal-grid">
+        ${headers}
+        ${cells}
+      </div>
+    </div>`;
+}
+
+function calPrev() {
+  if (S.calMonth === 0) { S.calYear--; S.calMonth = 11; } else S.calMonth--;
+  navigate('calendar');
+}
+function calNext() {
+  if (S.calMonth === 11) { S.calYear++; S.calMonth = 0; } else S.calMonth++;
+  navigate('calendar');
+}
+
+// ── Modal system ──────────────────────────────
+function openModal(content, title) {
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML    = content;
+  document.getElementById('modalOverlay').style.display = 'flex';
+}
+function closeModal() {
+  document.getElementById('modalOverlay').style.display = 'none';
+}
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+// ── Athlete modal ─────────────────────────────
+function openAthleteModal(id = null) {
+  const a = id ? S.athletes.find(x => x.id === id) : null;
+  const myProgs = id ? S.enrollments.filter(e => e.athlete_id === id).map(e => e.program_id) : [];
+
+  const checks = S.programs.map(p => `
+    <label class="check-row">
+      <input type="checkbox" name="programs" value="${p.id}" ${myProgs.includes(p.id) ? 'checked' : ''}>
+      <span>${esc(p.name)}</span>
+    </label>`).join('');
+
+  openModal(`
+    <form id="athleteForm" onsubmit="saveAthlete(event,'${id||''}')">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Full Name *</label>
+          <input name="name" value="${a ? esc(a.name) : ''}" required placeholder="First Last">
+        </div>
+        <div class="form-field">
+          <label>Age</label>
+          <input type="number" name="age" value="${a?.age||''}" min="1" max="25" placeholder="—">
+        </div>
+        <div class="form-field">
+          <label>Parent / Guardian</label>
+          <input name="parent_name" value="${a?.parent_name ? esc(a.parent_name) : ''}" placeholder="Full name">
+        </div>
+        <div class="form-field">
+          <label>Parent Phone</label>
+          <input type="tel" name="parent_phone" value="${a?.parent_phone ? esc(a.parent_phone) : ''}" placeholder="(555) 000-0000">
+        </div>
+        <div class="form-field full">
+          <label>Parent Email</label>
+          <input type="email" name="parent_email" value="${a?.parent_email ? esc(a.parent_email) : ''}" placeholder="parent@email.com">
+        </div>
+        <div class="form-field full">
+          <label>Notes</label>
+          <textarea name="notes" rows="3" placeholder="Goals, injuries, anything relevant…">${a?.notes ? esc(a.notes) : ''}</textarea>
+        </div>
+        ${S.programs.length ? `
+        <div class="form-field full">
+          <label>Enrolled Programs</label>
+          <div class="check-group">${checks}</div>
+        </div>` : ''}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">${a ? 'Save Changes' : 'Add Athlete'}</button>
+      </div>
+    </form>
+  `, a ? `Edit: ${a.name}` : 'Add Athlete');
+}
+
+async function saveAthlete(e, id) {
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    name:         f.name.value.trim(),
+    age:          f.age.value ? parseInt(f.age.value) : null,
+    parent_name:  f.parent_name.value.trim() || null,
+    parent_phone: f.parent_phone.value.trim() || null,
+    parent_email: f.parent_email.value.trim() || null,
+    notes:        f.notes.value.trim() || null,
+  };
+  const selProgs = [...f.querySelectorAll('input[name="programs"]:checked')].map(cb => cb.value);
+
+  let aid = id;
+  if (id) {
+    await sb.from('athletes').update(payload).eq('id', id);
+  } else {
+    const { data } = await sb.from('athletes').insert(payload).select().single();
+    aid = data.id;
+  }
+
+  if (aid) {
+    await sb.from('enrollments').delete().eq('athlete_id', aid);
+    if (selProgs.length) {
+      await sb.from('enrollments').insert(
+        selProgs.map(pid => ({ athlete_id: aid, program_id: pid, active: true, start_date: today() }))
+      );
+    }
+  }
+
+  closeModal();
+  await loadAll();
+  navigate(S.view);
+  showToast(id ? 'Athlete updated.' : 'Athlete added!');
+}
+
+async function deleteAthlete(id, name) {
+  if (!confirm(`Delete ${name}? This cannot be undone.`)) return;
+  await sb.from('enrollments').delete().eq('athlete_id', id);
+  await sb.from('athletes').delete().eq('id', id);
+  await loadAll();
+  navigate(S.view);
+  showToast('Athlete deleted.');
+}
+
+// ── Program modal ─────────────────────────────
+function openProgramModal(id = null) {
+  const p = id ? S.programs.find(x => x.id === id) : null;
+  const DAYS = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+  openModal(`
+    <form id="programForm" onsubmit="saveProgram(event,'${id||''}')">
+      <div class="form-grid">
+        <div class="form-field full">
+          <label>Program Name *</label>
+          <input name="name" value="${p ? esc(p.name) : ''}" required placeholder="e.g. Speed & Agility — Monday">
+        </div>
+        <div class="form-field">
+          <label>Day of Week</label>
+          <select name="day_of_week">
+            <option value="">— Select —</option>
+            ${DAYS.map(d => `<option value="${d}" ${p?.day_of_week===d?'selected':''}>${d}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-field">
+          <label>Capacity</label>
+          <input type="number" name="capacity" value="${p?.capacity||''}" min="1" max="100" placeholder="20">
+        </div>
+        <div class="form-field">
+          <label>Start Time</label>
+          <input type="time" name="time_start" value="${p?.time_start||''}">
+        </div>
+        <div class="form-field">
+          <label>End Time</label>
+          <input type="time" name="time_end" value="${p?.time_end||''}">
+        </div>
+        <div class="form-field full">
+          <label>Description</label>
+          <textarea name="description" rows="2" placeholder="Brief description of this program…">${p?.description ? esc(p.description) : ''}</textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">${p ? 'Save Changes' : 'Add Program'}</button>
+      </div>
+    </form>
+  `, p ? `Edit: ${p.name}` : 'Add Program');
+}
+
+async function saveProgram(e, id) {
+  e.preventDefault();
+  const f = e.target;
+  const payload = {
+    name:        f.name.value.trim(),
+    day_of_week: f.day_of_week.value || null,
+    capacity:    f.capacity.value ? parseInt(f.capacity.value) : null,
+    time_start:  f.time_start.value || null,
+    time_end:    f.time_end.value || null,
+    description: f.description.value.trim() || null,
+    active:      true,
+  };
+  if (id) {
+    await sb.from('programs').update(payload).eq('id', id);
+  } else {
+    await sb.from('programs').insert(payload);
+  }
+  closeModal();
+  await loadAll();
+  navigate(S.view);
+  showToast(id ? 'Program updated.' : 'Program added!');
+}
+
+// ── Roster modal ──────────────────────────────
+function viewRoster(programId) {
+  const prog     = S.programs.find(p => p.id === programId);
+  const enrolled = S.enrollments
+    .filter(e => e.program_id === programId)
+    .map(e => S.athletes.find(a => a.id === e.athlete_id))
+    .filter(Boolean);
+
+  openModal(`
+    <div class="roster-list">
+      ${enrolled.length === 0
+        ? `<div class="empty-state">No athletes enrolled yet.</div>`
+        : enrolled.map(a => `
+            <div class="roster-row">
+              <div class="avatar-sm">${initStr(a.name)}</div>
+              <div class="roster-info">
+                <div class="roster-name">${esc(a.name)}</div>
+                <div class="roster-detail">${[a.age && `Age ${a.age}`, a.parent_name && esc(a.parent_name)].filter(Boolean).join(' · ')}</div>
+              </div>
+              <div class="roster-contact">${esc(a.parent_phone || a.parent_email || '')}</div>
+            </div>`).join('')}
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Close</button>
+      <button class="btn-primary" onclick="closeModal();navigate('athletes')">Manage Athletes →</button>
+    </div>
+  `, `${prog?.name || 'Program'} — Roster (${enrolled.length})`);
+}
+
+// ── Day / Session modals ──────────────────────
+function openDayModal(ds) {
+  const daySessions = S.sessions.filter(s => s.session_date === ds);
+  const d = new Date(ds + 'T00:00:00');
+  const title = d.toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+  const progOpts = S.programs.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+
+  openModal(`
+    <div class="day-sessions">
+      ${daySessions.length === 0
+        ? `<div class="empty-state">No sessions on this day.</div>`
+        : daySessions.map(s => {
+            const prog = S.programs.find(p => p.id === s.program_id);
+            return `
+              <div class="day-session-row ${s.cancelled ? 'cancelled' : ''}">
+                <div class="day-session-left">
+                  <div class="day-session-prog">${prog ? esc(prog.name) : 'Unknown'} ${s.cancelled ? '<span style="font-size:11px;color:var(--red)">(Cancelled)</span>' : ''}</div>
+                  ${s.notes ? `<div class="day-session-notes">${esc(s.notes)}</div>` : ''}
+                </div>
+                <div class="day-session-actions">
+                  <button class="btn-icon ${s.cancelled ? '' : 'warning'}" onclick="toggleCancel('${s.id}','${ds}',${s.cancelled})">${s.cancelled ? 'Restore' : 'Cancel'}</button>
+                  <button class="btn-icon danger" onclick="deleteSession('${s.id}','${ds}')">Delete</button>
+                </div>
+              </div>`;
+          }).join('')}
+    </div>
+    <div class="add-session-form">
+      <div class="form-section-label">Add Session to This Day</div>
+      <form onsubmit="addSessionToDay(event,'${ds}')">
+        <div class="form-row">
+          <select name="program_id" class="select-input" required>
+            <option value="">Select program…</option>
+            ${progOpts}
+          </select>
+          <input type="text" name="notes" class="text-input" placeholder="Notes (optional)">
+          <button type="submit" class="btn-primary">Add</button>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-cancel" onclick="closeModal()">Close</button>
+    </div>
+  `, title);
+}
+
+function openAddSessionModal() {
+  const progOpts = S.programs.map(p => `<option value="${p.id}">${esc(p.name)}</option>`).join('');
+  openModal(`
+    <form onsubmit="addSessionStandalone(event)">
+      <div class="form-grid">
+        <div class="form-field">
+          <label>Date *</label>
+          <input type="date" name="session_date" required value="${today()}">
+        </div>
+        <div class="form-field">
+          <label>Program *</label>
+          <select name="program_id" required>
+            <option value="">Select…</option>
+            ${progOpts}
+          </select>
+        </div>
+        <div class="form-field full">
+          <label>Notes</label>
+          <input name="notes" placeholder="Optional notes for this session">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn-primary">Add Session</button>
+      </div>
+    </form>
+  `, 'Add Session');
+}
+
+async function addSessionStandalone(e) {
+  e.preventDefault();
+  const f = e.target;
+  await sb.from('sessions').insert({
+    session_date: f.session_date.value,
+    program_id:   f.program_id.value,
+    notes:        f.notes.value.trim() || null,
+    cancelled:    false,
+  });
+  closeModal();
+  await loadAll();
+  navigate('calendar');
+  showToast('Session added!');
+}
+
+async function addSessionToDay(e, ds) {
+  e.preventDefault();
+  const f = e.target;
+  await sb.from('sessions').insert({
+    session_date: ds,
+    program_id:   f.program_id.value,
+    notes:        f.notes.value.trim() || null,
+    cancelled:    false,
+  });
+  await loadAll();
+  openDayModal(ds);
+  showToast('Session added!');
+}
+
+async function toggleCancel(id, ds, current) {
+  await sb.from('sessions').update({ cancelled: !current }).eq('id', id);
+  await loadAll();
+  openDayModal(ds);
+}
+
+async function deleteSession(id, ds) {
+  if (!confirm('Delete this session?')) return;
+  await sb.from('sessions').delete().eq('id', id);
+  await loadAll();
+  openDayModal(ds);
+  showToast('Session deleted.');
+}
+
+// ── Sign out ──────────────────────────────────
+async function signOut() {
+  await sb.auth.signOut();
+  window.location.href = 'login.html';
+}
+
+// ── Utilities ─────────────────────────────────
+function esc(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+function initStr(name) {
+  return (name || '?').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+}
+
+function today() {
+  return new Date().toISOString().split('T')[0];
+}
+
+function fmtTime(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  const hr   = h % 12 || 12;
+  return `${hr}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── Start ─────────────────────────────────────
+init();
+</script>
+</body>
+</html>
